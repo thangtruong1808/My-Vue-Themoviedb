@@ -3,10 +3,13 @@
     <Navbar />
     <div class="container mx-auto px-4 py-8" v-if="movieDetails">
       <div class="flex flex-col md:flex-row gap-8">
-        <img
-          :src="`https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`"
+        <MoviePoster
+          :poster-path="movieDetails.poster_path"
           :alt="movieDetails.title"
-          class="w-full md:w-1/3 rounded-lg"
+          size="w500"
+          object-fit="contain"
+          container-class="w-full md:w-1/3 rounded-lg"
+          image-class="rounded-lg"
         />
         <div class="flex-1">
           <h1 class="text-4xl font-bold mb-4">{{ movieDetails.title }}</h1>
@@ -41,6 +44,7 @@ import { onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useMovieStore } from "../stores/movieStore";
 import Navbar from "../components/Navbar.vue";
+import MoviePoster from "../components/MoviePoster.vue";
 
 const route = useRoute();
 const store = useMovieStore();

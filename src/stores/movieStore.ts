@@ -40,6 +40,7 @@ export const useMovieStore = defineStore("movie", () => {
   const movies = ref<Movie[]>([]);
   const loading = ref(false);
   const error = ref("");
+  const hasAttemptedFetch = ref(false); // Track if we've attempted to fetch
   const searchQuery = ref("");
   const searchResults = ref<Movie[]>([]);
   const movieDetails = ref<Movie | null>(null);
@@ -136,11 +137,17 @@ export const useMovieStore = defineStore("movie", () => {
   };
 
   const fetchPopularMovies = async () => {
+    hasAttemptedFetch.value = true;
     const cachedData = getCachedData<Movie[]>("popular");
-    if (!cachedData) {
+    if (cachedData) {
+      // If we have cached data, show it immediately
+      movies.value = cachedData;
+      loading.value = false;
+    } else {
       // Set loading and clear movies BEFORE fetching to show skeleton
       loading.value = true;
       movies.value = [];
+      error.value = "";
     }
     await fetchWithCache(
       "popular",
@@ -150,11 +157,17 @@ export const useMovieStore = defineStore("movie", () => {
   };
 
   const fetchNowPlayingMovies = async () => {
+    hasAttemptedFetch.value = true;
     const cachedData = getCachedData<Movie[]>("nowPlaying");
-    if (!cachedData) {
+    if (cachedData) {
+      // If we have cached data, show it immediately
+      movies.value = cachedData;
+      loading.value = false;
+    } else {
       // Set loading and clear movies BEFORE fetching to show skeleton
       loading.value = true;
       movies.value = [];
+      error.value = "";
     }
     await fetchWithCache(
       "nowPlaying",
@@ -164,11 +177,17 @@ export const useMovieStore = defineStore("movie", () => {
   };
 
   const fetchTopRatedMovies = async () => {
+    hasAttemptedFetch.value = true;
     const cachedData = getCachedData<Movie[]>("topRated");
-    if (!cachedData) {
+    if (cachedData) {
+      // If we have cached data, show it immediately
+      movies.value = cachedData;
+      loading.value = false;
+    } else {
       // Set loading and clear movies BEFORE fetching to show skeleton
       loading.value = true;
       movies.value = [];
+      error.value = "";
     }
     await fetchWithCache(
       "topRated",
@@ -363,6 +382,7 @@ export const useMovieStore = defineStore("movie", () => {
     movies,
     loading,
     error,
+    hasAttemptedFetch,
     searchQuery,
     searchResults,
     movieDetails,
