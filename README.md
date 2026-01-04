@@ -1,13 +1,114 @@
-# Vue 3 + TypeScript + Vite
+# Vue 3 + TypeScript + Vite - TMDB Movie App
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
-
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+A modern, responsive movie database application built with Vue 3, TypeScript, Vite, and Tailwind CSS. This app integrates with The Movie Database (TMDB) API to provide a comprehensive movie browsing experience.
 
 ## Features
 
-- Display a list of popular movies.
-- Search for movies by title.
-- View movie details.
-- Display a list of now playing movies.
-- Display a list of top rated movies.
+- **Display a list of popular movies**: Browse trending movies on the homepage.
+- **Search for movies by title**: Real-time search with debounced input for efficient API calls.
+- **View movie details**: Detailed view including poster, synopsis, release date, rating, and genres.
+- **Display a list of now playing movies**: Current theatrical releases.
+- **Display a list of top rated movies**: Highest-rated movies from TMDB.
+- **Responsive Design**: Mobile-first approach using Tailwind CSS for seamless experience across devices.
+- **Modern UI**: Clean, dark-themed interface with hover effects and smooth transitions.
+- **State Management**: Pinia for centralized state handling.
+- **Routing**: Vue Router for client-side navigation.
+
+## Tech Stack
+
+- **Frontend Framework**: Vue 3 with Composition API
+- **Language**: TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS v4
+- **State Management**: Pinia
+- **Routing**: Vue Router 4
+- **API**: TMDB API
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v16 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/your-username/my-vue-themoviedb.git
+   cd my-vue-themoviedb
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Create a `.env` file in the root directory and add your TMDB API key:
+
+   ```
+   VITE_API_ACCESS_TOKEN=your_tmdb_access_token_here
+   ```
+
+4. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+5. Open your browser and navigate to `http://localhost:5173`
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
+## Project Structure
+
+```
+src/
+├── components/          # Reusable Vue components
+│   ├── MovieCard.vue    # Individual movie card
+│   ├── MovieList.vue    # Grid layout for movies
+│   └── Navbar.vue       # Navigation bar
+├── services/            # API service functions
+│   └── MovieService.ts  # TMDB API integration
+├── stores/              # Pinia stores
+│   └── movieStore.ts    # Movie state management
+├── views/               # Page components
+│   ├── Home.vue         # Popular movies
+│   ├── MovieDetails.vue # Movie detail page
+│   ├── NowPlaying.vue   # Now playing movies
+│   ├── Search.vue       # Search page
+│   └── TopRated.vue     # Top rated movies
+├── router/              # Vue Router configuration
+│   └── index.ts
+├── App.vue              # Root component
+├── main.ts              # Application entry point
+└── style.css            # Global styles with Tailwind
+```
+
+## API Integration
+
+This app uses the TMDB API v3. You'll need to obtain an API access token from [TMDB](https://www.themoviedb.org/settings/api) and add it to your environment variables.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and linting
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
