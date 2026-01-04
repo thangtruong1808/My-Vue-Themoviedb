@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-screen bg-gray-900 text-white">
+  <div class="min-h-screen bg-gray-900 text-white pb-32">
     <Navbar />
     <div class="container mx-auto px-4 py-8" v-if="tvShowDetails">
       <!-- Back Button -->
       <button
         @click="goBack"
-        class="mb-6 flex items-center text-gray-400 hover:text-white transition-colors"
+        class="back-button mb-6 flex items-center text-gray-300 hover:text-white transition-colors"
       >
         <svg
           class="w-5 h-5 mr-2"
@@ -86,4 +86,14 @@ onMounted(() => {
   fetchTVShowDetails(id);
 });
 </script>
+
+<style scoped>
+.back-button {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  font-weight: normal !important;
+  border-radius: 0 !important;
+}
+</style>
 

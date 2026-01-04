@@ -22,7 +22,7 @@
           @click="toggleSearchDrawer" 
           :class="['nav-link', { 'nav-link-active': searchDrawerOpen }]"
         >
-          Search
+          Search Movies
         </button>
         <span class="text-gray-500 mx-2 font-bold">|</span>
         <router-link to="/tv" class="nav-link"

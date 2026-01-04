@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <router-view v-if="!shouldShowFilteredResults || isDetailsPage" />
-    <div v-else-if="shouldShowFilteredResults" class="min-h-screen bg-gray-900 text-white">
+    <div v-else-if="shouldShowFilteredResults" class="min-h-screen bg-gray-900 text-white pb-32">
       <Navbar />
       <div class="container mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-8">
@@ -24,6 +24,7 @@
         />
       </div>
     </div>
+    <Footer />
   </div>
 </template>
 
@@ -34,6 +35,7 @@ import { storeToRefs } from "pinia";
 import { useMovieStore } from "./stores/movieStore";
 import Navbar from "./components/Navbar.vue";
 import MovieList from "./components/MovieList.vue";
+import Footer from "./components/Footer.vue";
 
 const route = useRoute();
 const store = useMovieStore();

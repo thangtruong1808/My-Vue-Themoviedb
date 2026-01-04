@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-900 text-white">
+  <div class="min-h-screen bg-gray-900 text-white pb-32">
     <Navbar />
     <div class="container mx-auto px-4 py-8">
       <h1 class="text-3xl font-bold mb-8">Top Rated Movies</h1>

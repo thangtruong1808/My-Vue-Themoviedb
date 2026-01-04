@@ -12,20 +12,20 @@
   <Transition name="drawer">
     <div
       v-if="isOpen"
-      class="fixed left-0 top-0 h-full w-full md:w-96 bg-gray-800 z-50 shadow-2xl overflow-y-auto"
+      class="fixed left-0 top-0 h-full w-full md:w-96 bg-gray-800 z-50 shadow-2xl flex flex-col"
       @click.stop
     >
-      <div class="p-6">
+      <div class="p-4">
         <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold text-white">Search & Filter</h2>
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-xl font-bold text-white">Search & Filter</h2>
           <button
             @click="closeDrawer"
             class="text-gray-400 hover:text-white transition-colors"
             aria-label="Close drawer"
           >
             <svg
-              class="w-6 h-6"
+              class="w-5 h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -41,54 +41,54 @@
         </div>
 
         <!-- Text Search -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-300 mb-2">
+        <div class="mb-3">
+          <label class="block text-xs font-medium text-gray-300 mb-1">
             Search Movies
           </label>
           <input
             v-model="localFilters.query"
             type="text"
             placeholder="Enter movie title..."
-            class="w-full p-3 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             @input="debouncedApplyFilters"
           />
         </div>
 
         <!-- Genres -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-300 mb-3">
+        <div class="mb-3">
+          <label class="block text-xs font-medium text-gray-300 mb-1.5">
             Genres
           </label>
           <div
             v-if="genresLoading"
-            class="text-gray-400 text-sm"
+            class="text-gray-400 text-xs"
           >
             Loading genres...
           </div>
           <div
             v-else
-            class="space-y-2 max-h-48 overflow-y-auto"
+            class="grid grid-cols-2 gap-1"
           >
             <label
               v-for="genre in genres"
               :key="genre.id"
-              class="flex items-center cursor-pointer hover:bg-gray-700 p-2 rounded transition-colors"
+              class="flex items-center cursor-pointer hover:bg-gray-700 p-1 rounded transition-colors"
             >
               <input
                 type="checkbox"
                 :value="genre.id"
                 v-model="localFilters.genres"
-                class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+                class="w-3 h-3 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
                 @change="debouncedApplyFilters"
               />
-              <span class="ml-3 text-sm text-gray-300">{{ genre.name }}</span>
+              <span class="ml-1.5 text-xs text-gray-300">{{ genre.name }}</span>
             </label>
           </div>
         </div>
 
         <!-- Year -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-300 mb-2">
+        <div class="mb-3">
+          <label class="block text-xs font-medium text-gray-300 mb-1">
             Release Year
           </label>
           <input
@@ -97,14 +97,14 @@
             min="1900"
             :max="currentYear"
             placeholder="e.g. 2020"
-            class="w-full p-3 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             @input="debouncedApplyFilters"
           />
         </div>
 
         <!-- Minimum Rating -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-300 mb-2">
+        <div class="mb-3">
+          <label class="block text-xs font-medium text-gray-300 mb-1">
             Minimum Rating: {{ localFilters.vote_average_gte || 0 }}/10
           </label>
           <input
@@ -116,7 +116,7 @@
             class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
             @input="debouncedApplyFilters"
           />
-          <div class="flex justify-between text-xs text-gray-400 mt-1">
+          <div class="flex justify-between text-xs text-gray-400 mt-0.5">
             <span>0</span>
             <span>10</span>
           </div>
@@ -125,7 +125,7 @@
         <!-- Clear Filters Button -->
         <button
           @click="clearFilters"
-          class="w-full py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium"
+          class="w-full py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium text-sm"
         >
           Clear All Filters
         </button>
