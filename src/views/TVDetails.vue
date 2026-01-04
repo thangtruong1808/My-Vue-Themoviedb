@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-900 text-white">
     <Navbar />
-    <div class="container mx-auto px-4 py-8" v-if="movieDetails">
+    <div class="container mx-auto px-4 py-8" v-if="tvShowDetails">
       <!-- Back Button -->
       <button
         @click="goBack"
@@ -24,25 +24,31 @@
       </button>
       <div class="flex flex-col md:flex-row gap-8">
         <MoviePoster
-          :poster-path="movieDetails.poster_path"
-          :alt="movieDetails.title"
+          :poster-path="tvShowDetails.poster_path"
+          :alt="tvShowDetails.name"
           size="w500"
           object-fit="contain"
           container-class="w-full md:w-1/3 rounded-lg"
           image-class="rounded-lg"
         />
         <div class="flex-1">
-          <h1 class="text-4xl font-bold mb-4">{{ movieDetails.title }}</h1>
-          <p class="text-lg mb-4">{{ movieDetails.overview }}</p>
+          <h1 class="text-4xl font-bold mb-4">{{ tvShowDetails.name }}</h1>
+          <p class="text-lg mb-4">{{ tvShowDetails.overview }}</p>
           <p class="mb-2">
-            <strong>Release Date:</strong> {{ movieDetails.release_date }}
+            <strong>First Air Date:</strong> {{ tvShowDetails.first_air_date }}
           </p>
           <p class="mb-2">
-            <strong>Rating:</strong> {{ movieDetails.vote_average }}/10
+            <strong>Rating:</strong> {{ tvShowDetails.vote_average }}/10
+          </p>
+          <p class="mb-2" v-if="tvShowDetails.number_of_seasons">
+            <strong>Seasons:</strong> {{ tvShowDetails.number_of_seasons }}
+          </p>
+          <p class="mb-2" v-if="tvShowDetails.number_of_episodes">
+            <strong>Episodes:</strong> {{ tvShowDetails.number_of_episodes }}
           </p>
           <p class="mb-4">
             <strong>Genres:</strong>
-            {{ movieDetails.genres.map((g: any) => g.name).join(", ") }}
+            {{ tvShowDetails.genres.map((g: any) => g.name).join(", ") }}
           </p>
         </div>
       </div>
@@ -60,43 +66,24 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch } from "vue";
+import { onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { storeToRefs } from "pinia";
-import { useMovieStore } from "../stores/movieStore";
+import { useTVStore } from "../stores/tvStore";
 import Navbar from "../components/Navbar.vue";
 import MoviePoster from "../components/MoviePoster.vue";
 
 const route = useRoute();
 const router = useRouter();
-const store = useMovieStore();
-// Use storeToRefs to maintain reactivity for state properties
-const { movieDetails, loading, error } = storeToRefs(store);
-// Methods don't need storeToRefs, access directly from store
-const { fetchMovieDetails } = store;
+const store = useTVStore();
+const { tvShowDetails, loading, error, fetchTVShowDetails } = store;
 
 const goBack = () => {
   router.back();
 };
 
-const loadMovieDetails = () => {
-  const id = route.params.id as string;
-  if (id) {
-    fetchMovieDetails(id);
-  }
-};
-
 onMounted(() => {
-  loadMovieDetails();
+  const id = route.params.id as string;
+  fetchTVShowDetails(id);
 });
-
-// Watch for route parameter changes to refetch when navigating between movies
-watch(
-  () => route.params.id,
-  (newId) => {
-    if (newId) {
-      loadMovieDetails();
-    }
-  }
-);
 </script>
+

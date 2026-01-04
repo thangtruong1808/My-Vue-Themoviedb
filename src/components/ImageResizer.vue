@@ -66,7 +66,6 @@ const containerStyle = computed((): CSSProperties => {
   const style: CSSProperties = {
     position: 'relative',
     width: typeof props.width === 'number' ? `${props.width}px` : props.width,
-    height: typeof props.height === 'number' ? `${props.height}px` : props.height,
     backgroundColor: props.backgroundColor,
     display: 'flex',
     alignItems: 'center',
@@ -74,9 +73,14 @@ const containerStyle = computed((): CSSProperties => {
     overflow: 'hidden',
   };
   
-  if (props.height === 'auto' && props.preserveAspectRatio) {
+  // For contain mode, allow height to adjust to preserve full content
+  if (props.fitMode === 'contain' && props.preserveAspectRatio) {
+    // Height will be determined by the image aspect ratio
     style.height = 'auto';
-    style.minHeight = '200px'; // Fallback min height
+    style.minHeight = typeof props.height === 'number' ? `${props.height}px` : props.height;
+  } else {
+    // For cover mode, use fixed height
+    style.height = typeof props.height === 'number' ? `${props.height}px` : props.height;
   }
   
   return style;
@@ -100,18 +104,22 @@ const imageStyle = computed((): CSSProperties => {
 
   if (props.fitMode === 'contain') {
     // Always fill width to ensure full width display, height adjusts to maintain aspect ratio
+    // This preserves all content while ensuring full width
     style.width = '100%';
     style.height = 'auto';
-    style.maxHeight = '100%';
     style.objectFit = 'contain';
+    style.display = 'block';
   } else if (props.fitMode === 'cover') {
-    // Fill container, may crop but won't distort
+    // Fill container width and height, may crop but won't distort - ensures full width display
     style.width = '100%';
     style.height = '100%';
+    style.objectFit = 'cover';
+    style.objectPosition = 'center';
   } else {
     // Fill - may distort
     style.width = '100%';
     style.height = '100%';
+    style.objectFit = 'fill';
   }
 
   return style;

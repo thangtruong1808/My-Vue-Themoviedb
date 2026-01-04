@@ -3,7 +3,15 @@
     <Navbar />
     <div class="container mx-auto px-4 py-8">
       <h1 class="text-3xl font-bold mb-8">Top Rated Movies</h1>
-      <MovieList :movies="movies" :loading="loading" :error="error" :has-attempted-fetch="hasAttemptedFetch" />
+      <MovieList
+        :movies="movies"
+        :loading="loading"
+        :error="error"
+        :has-attempted-fetch="hasAttemptedFetch"
+        :loading-more="loadingMore"
+        :has-more="currentPage < totalPages"
+        :on-load-more="loadMoreMovies"
+      />
     </div>
   </div>
 </template>
@@ -17,9 +25,9 @@ import MovieList from "../components/MovieList.vue";
 
 const store = useMovieStore();
 // Use storeToRefs to maintain reactivity for state properties
-const { movies, loading, error, hasAttemptedFetch } = storeToRefs(store);
+const { movies, loading, loadingMore, error, hasAttemptedFetch, currentPage, totalPages } = storeToRefs(store);
 // Methods don't need storeToRefs, access directly from store
-const { fetchTopRatedMovies } = store;
+const { fetchTopRatedMovies, loadMoreMovies } = store;
 
 // Set loading to true and clear movies BEFORE first render to show skeleton
 // This prevents "No movies found" or wrong movies from showing before fetch starts

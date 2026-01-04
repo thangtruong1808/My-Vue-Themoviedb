@@ -49,9 +49,9 @@ const handleResponse = async (response: Response) => {
   return response.json();
 };
 
-export const getPopularMovies = async (page: number = 1) => {
+export const getPopularTVShows = async (page: number = 1) => {
   const response = await fetchWithTimeout(
-    `${API_URL}/movie/popular?page=${page}`,
+    `${API_URL}/tv/popular?page=${page}`,
     options
   );
   const data = await handleResponse(response);
@@ -63,9 +63,9 @@ export const getPopularMovies = async (page: number = 1) => {
   };
 };
 
-export const searchMovies = async (query: string, page: number = 1) => {
+export const searchTVShows = async (query: string, page: number = 1) => {
   const response = await fetchWithTimeout(
-    `${API_URL}/search/movie?query=${encodeURIComponent(query)}&page=${page}`,
+    `${API_URL}/search/tv?query=${encodeURIComponent(query)}&page=${page}`,
     options
   );
   const data = await handleResponse(response);
@@ -77,63 +77,18 @@ export const searchMovies = async (query: string, page: number = 1) => {
   };
 };
 
-export const discoverMovies = async (filters: {
-  query?: string;
-  genres?: number[];
-  year?: number;
-  vote_average_gte?: number;
-  page?: number;
-}) => {
-  const params = new URLSearchParams();
-  
-  if (filters.query) {
-    // If query is provided, use search endpoint instead of discover
-    return searchMovies(filters.query, filters.page || 1);
-  }
-  
-  if (filters.genres && filters.genres.length > 0) {
-    params.append("with_genres", filters.genres.join(","));
-  }
-  
-  if (filters.year) {
-    params.append("primary_release_year", filters.year.toString());
-  }
-  
-  if (filters.vote_average_gte !== undefined) {
-    params.append("vote_average.gte", filters.vote_average_gte.toString());
-  }
-  
-  if (filters.page) {
-    params.append("page", filters.page.toString());
-  } else {
-    params.append("page", "1");
-  }
-  
+export const getTVShow = async (id: string) => {
   const response = await fetchWithTimeout(
-    `${API_URL}/discover/movie?${params.toString()}`,
-    options
-  );
-  const data = await handleResponse(response);
-  return {
-    results: data.results || [],
-    page: data.page || filters.page || 1,
-    totalPages: data.total_pages || 1,
-    totalResults: data.total_results || 0,
-  };
-};
-
-export const getMovie = async (id: string) => {
-  const response = await fetchWithTimeout(
-    `${API_URL}/movie/${id}`,
+    `${API_URL}/tv/${id}`,
     options
   );
   const data = await handleResponse(response);
   return data;
 };
 
-export const getNowPlayingMovies = async (page: number = 1) => {
+export const getOnTheAirTVShows = async (page: number = 1) => {
   const response = await fetchWithTimeout(
-    `${API_URL}/movie/now_playing?page=${page}`,
+    `${API_URL}/tv/on_the_air?page=${page}`,
     options
   );
   const data = await handleResponse(response);
@@ -145,9 +100,9 @@ export const getNowPlayingMovies = async (page: number = 1) => {
   };
 };
 
-export const getTopRatedMovies = async (page: number = 1) => {
+export const getTopRatedTVShows = async (page: number = 1) => {
   const response = await fetchWithTimeout(
-    `${API_URL}/movie/top_rated?page=${page}`,
+    `${API_URL}/tv/top_rated?page=${page}`,
     options
   );
   const data = await handleResponse(response);
@@ -159,54 +114,54 @@ export const getTopRatedMovies = async (page: number = 1) => {
   };
 };
 
-export const getUpcomingMovies = async () => {
+export const getAiringTodayTVShows = async () => {
   const response = await fetchWithTimeout(
-    `${API_URL}/movie/upcoming`,
+    `${API_URL}/tv/airing_today`,
     options
   );
   const data = await handleResponse(response);
   return data.results || [];
 };
 
-export const getMovieGenres = async () => {
+export const getTVShowGenres = async () => {
   const response = await fetchWithTimeout(
-    `${API_URL}/genre/movie/list`,
+    `${API_URL}/genre/tv/list`,
     options
   );
   const data = await handleResponse(response);
   return data.genres || [];
 };
 
-export const getMovieCredits = async (id: string) => {
+export const getTVShowCredits = async (id: string) => {
   const response = await fetchWithTimeout(
-    `${API_URL}/movie/${id}/credits`,
+    `${API_URL}/tv/${id}/credits`,
     options
   );
   const data = await handleResponse(response);
   return data;
 };
 
-export const getMovieImages = async (id: string) => {
+export const getTVShowImages = async (id: string) => {
   const response = await fetchWithTimeout(
-    `${API_URL}/movie/${id}/images`,
+    `${API_URL}/tv/${id}/images`,
     options
   );
   const data = await handleResponse(response);
   return data;
 };
 
-export const getMovieVideos = async (id: string) => {
+export const getTVShowVideos = async (id: string) => {
   const response = await fetchWithTimeout(
-    `${API_URL}/movie/${id}/videos`,
+    `${API_URL}/tv/${id}/videos`,
     options
   );
   const data = await handleResponse(response);
   return data.results || [];
 };
 
-export const getTrendingMovies = async (timeWindow: string = "day") => {
+export const getTrendingTVShows = async (timeWindow: string = "day") => {
   const response = await fetchWithTimeout(
-    `${API_URL}/trending/movie/${timeWindow}`,
+    `${API_URL}/trending/tv/${timeWindow}`,
     options
   );
   const data = await handleResponse(response);
@@ -221,3 +176,4 @@ export const getConfiguration = async () => {
   const data = await handleResponse(response);
   return data;
 };
+

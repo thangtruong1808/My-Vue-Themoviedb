@@ -1,26 +1,26 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import {
-  getPopularMovies,
-  searchMovies,
-  discoverMovies,
-  getMovie,
-  getNowPlayingMovies,
-  getTopRatedMovies,
-  getUpcomingMovies,
-  getMovieGenres,
+  getPopularTVShows,
+  searchTVShows,
+  getTVShow,
+  getOnTheAirTVShows,
+  getTopRatedTVShows,
+  getAiringTodayTVShows,
+  getTVShowGenres,
   getConfiguration,
-} from "../services/MovieService";
+} from "../services/TVService";
 
-interface Movie {
+interface TVShow {
   id: number;
-  title: string;
+  name: string;
   poster_path: string;
-  release_date: string;
+  first_air_date: string;
   vote_average: number;
   overview: string;
   genres: { id: number; name: string }[];
-  video?: boolean;
+  number_of_seasons?: number;
+  number_of_episodes?: number;
 }
 
 interface Genre {
@@ -33,40 +33,29 @@ interface CacheEntry<T> {
   timestamp: number;
 }
 
-export type { Movie, Genre };
+export type { TVShow, Genre };
 
 // Cache duration: 5 minutes (300000 ms)
 const CACHE_DURATION = 5 * 60 * 1000;
 
-export const useMovieStore = defineStore("movie", () => {
-  const movies = ref<Movie[]>([]);
+export const useTVStore = defineStore("tv", () => {
+  const tvShows = ref<TVShow[]>([]);
   const loading = ref(false);
   const error = ref("");
   const hasAttemptedFetch = ref(false); // Track if we've attempted to fetch
   const searchQuery = ref("");
-  const searchResults = ref<Movie[]>([]);
-  const movieDetails = ref<Movie | null>(null);
+  const searchResults = ref<TVShow[]>([]);
+  const tvShowDetails = ref<TVShow | null>(null);
   const genres = ref<Genre[]>([]);
   const configuration = ref<any>(null);
   // Pagination state
   const currentPage = ref(1);
   const totalPages = ref(1);
   const loadingMore = ref(false);
-  const currentListType = ref<"popular" | "nowPlaying" | "topRated" | "search" | null>(null);
-  
-  // Search drawer and filter state
-  const searchDrawerOpen = ref(false);
-  const searchFilters = ref<{
-    query?: string;
-    genres?: number[];
-    year?: number;
-    vote_average_gte?: number;
-  }>({});
-  const filteredResults = ref<Movie[]>([]);
-  const filteredCurrentPage = ref(1);
-  const filteredTotalPages = ref(1);
-  const filteredLoadingMore = ref(false);
-  const hasActiveFilters = ref(false);
+  const currentListType = ref<"popular" | "onTheAir" | "topRated" | "search" | null>(null);
+  // Search pagination state
+  const searchCurrentPage = ref(1);
+  const searchTotalPages = ref(1);
 
   // Cache storage
   const cache = ref<Map<string, CacheEntry<any>>>(new Map());
@@ -157,19 +146,19 @@ export const useMovieStore = defineStore("movie", () => {
     return promise;
   };
 
-  const fetchPopularMovies = async (reset: boolean = true) => {
+  const fetchPopularTVShows = async (reset: boolean = true) => {
     if (reset) {
       hasAttemptedFetch.value = true;
       currentPage.value = 1;
       currentListType.value = "popular";
-      const cachedData = getCachedData<Movie[]>("popular:1");
+      const cachedData = getCachedData<TVShow[]>("popular:1");
       if (cachedData) {
-        movies.value = cachedData;
+        tvShows.value = cachedData;
         loading.value = false;
         totalPages.value = getCachedData<number>("popular:totalPages") || 1;
       } else {
         loading.value = true;
-        movies.value = [];
+        tvShows.value = [];
         error.value = "";
       }
     }
@@ -177,37 +166,37 @@ export const useMovieStore = defineStore("movie", () => {
     try {
       loading.value = true;
       error.value = "";
-      const response = await getPopularMovies(currentPage.value);
+      const response = await getPopularTVShows(currentPage.value);
       if (reset) {
-        movies.value = response.results;
+        tvShows.value = response.results;
       } else {
-        movies.value = [...movies.value, ...response.results];
+        tvShows.value = [...tvShows.value, ...response.results];
       }
       currentPage.value = response.page;
       totalPages.value = response.totalPages;
       setCachedData(`popular:${response.page}`, response.results);
       setCachedData("popular:totalPages", response.totalPages);
     } catch (err: any) {
-      error.value = err.message || "Failed to fetch movies";
+      error.value = err.message || "Failed to fetch TV shows";
       throw err;
     } finally {
       loading.value = false;
     }
   };
 
-  const fetchNowPlayingMovies = async (reset: boolean = true) => {
+  const fetchOnTheAirTVShows = async (reset: boolean = true) => {
     if (reset) {
       hasAttemptedFetch.value = true;
       currentPage.value = 1;
-      currentListType.value = "nowPlaying";
-      const cachedData = getCachedData<Movie[]>("nowPlaying:1");
+      currentListType.value = "onTheAir";
+      const cachedData = getCachedData<TVShow[]>("onTheAir:1");
       if (cachedData) {
-        movies.value = cachedData;
+        tvShows.value = cachedData;
         loading.value = false;
-        totalPages.value = getCachedData<number>("nowPlaying:totalPages") || 1;
+        totalPages.value = getCachedData<number>("onTheAir:totalPages") || 1;
       } else {
         loading.value = true;
-        movies.value = [];
+        tvShows.value = [];
         error.value = "";
       }
     }
@@ -215,37 +204,37 @@ export const useMovieStore = defineStore("movie", () => {
     try {
       loading.value = true;
       error.value = "";
-      const response = await getNowPlayingMovies(currentPage.value);
+      const response = await getOnTheAirTVShows(currentPage.value);
       if (reset) {
-        movies.value = response.results;
+        tvShows.value = response.results;
       } else {
-        movies.value = [...movies.value, ...response.results];
+        tvShows.value = [...tvShows.value, ...response.results];
       }
       currentPage.value = response.page;
       totalPages.value = response.totalPages;
-      setCachedData(`nowPlaying:${response.page}`, response.results);
-      setCachedData("nowPlaying:totalPages", response.totalPages);
+      setCachedData(`onTheAir:${response.page}`, response.results);
+      setCachedData("onTheAir:totalPages", response.totalPages);
     } catch (err: any) {
-      error.value = err.message || "Failed to fetch movies";
+      error.value = err.message || "Failed to fetch TV shows";
       throw err;
     } finally {
       loading.value = false;
     }
   };
 
-  const fetchTopRatedMovies = async (reset: boolean = true) => {
+  const fetchTopRatedTVShows = async (reset: boolean = true) => {
     if (reset) {
       hasAttemptedFetch.value = true;
       currentPage.value = 1;
       currentListType.value = "topRated";
-      const cachedData = getCachedData<Movie[]>("topRated:1");
+      const cachedData = getCachedData<TVShow[]>("topRated:1");
       if (cachedData) {
-        movies.value = cachedData;
+        tvShows.value = cachedData;
         loading.value = false;
         totalPages.value = getCachedData<number>("topRated:totalPages") || 1;
       } else {
         loading.value = true;
-        movies.value = [];
+        tvShows.value = [];
         error.value = "";
       }
     }
@@ -253,54 +242,66 @@ export const useMovieStore = defineStore("movie", () => {
     try {
       loading.value = true;
       error.value = "";
-      const response = await getTopRatedMovies(currentPage.value);
+      const response = await getTopRatedTVShows(currentPage.value);
       if (reset) {
-        movies.value = response.results;
+        tvShows.value = response.results;
       } else {
-        movies.value = [...movies.value, ...response.results];
+        tvShows.value = [...tvShows.value, ...response.results];
       }
       currentPage.value = response.page;
       totalPages.value = response.totalPages;
       setCachedData(`topRated:${response.page}`, response.results);
       setCachedData("topRated:totalPages", response.totalPages);
     } catch (err: any) {
-      error.value = err.message || "Failed to fetch movies";
+      error.value = err.message || "Failed to fetch TV shows";
       throw err;
     } finally {
       loading.value = false;
     }
   };
 
-  const fetchUpcomingMovies = async () => {
+  const fetchAiringTodayTVShows = async () => {
+    hasAttemptedFetch.value = true;
+    const cachedData = getCachedData<TVShow[]>("airingToday");
+    if (cachedData) {
+      // If we have cached data, show it immediately
+      tvShows.value = cachedData;
+      loading.value = false;
+    } else {
+      // Set loading and clear tvShows BEFORE fetching to show skeleton
+      loading.value = true;
+      tvShows.value = [];
+      error.value = "";
+    }
     await fetchWithCache(
-      "upcoming",
-      getUpcomingMovies,
-      (data) => (movies.value = data)
+      "airingToday",
+      getAiringTodayTVShows,
+      (data) => (tvShows.value = data)
     );
   };
 
-  const searchMoviesAction = async (query: string, reset: boolean = true) => {
+  const searchTVShowsAction = async (query: string, reset: boolean = true) => {
     if (!query.trim()) {
       searchResults.value = [];
       loading.value = false;
-      hasAttemptedFetch.value = false;
+      searchCurrentPage.value = 1;
+      searchTotalPages.value = 1;
       return;
     }
 
     if (reset) {
-      hasAttemptedFetch.value = true;
+      searchCurrentPage.value = 1;
       currentListType.value = "search";
       searchQuery.value = query;
-      currentPage.value = 1;
     }
 
-    const cacheKey = `search:${query.toLowerCase().trim()}:${currentPage.value}`;
-    const cachedData = getCachedData<Movie[]>(cacheKey);
+    const cacheKey = `search:${query.toLowerCase().trim()}:${searchCurrentPage.value}`;
+    const cachedData = getCachedData<TVShow[]>(cacheKey);
     
     if (cachedData && reset) {
       searchResults.value = cachedData;
       loading.value = false;
-      totalPages.value = getCachedData<number>(`search:${query.toLowerCase().trim()}:totalPages`) || 1;
+      searchTotalPages.value = getCachedData<number>(`search:${query.toLowerCase().trim()}:totalPages`) || 1;
       return;
     }
 
@@ -314,18 +315,18 @@ export const useMovieStore = defineStore("movie", () => {
     }
 
     try {
-      const response = await searchMovies(query, currentPage.value);
+      const response = await searchTVShows(query, searchCurrentPage.value);
       if (reset) {
         searchResults.value = response.results;
       } else {
         searchResults.value = [...searchResults.value, ...response.results];
       }
-      currentPage.value = response.page;
-      totalPages.value = response.totalPages;
+      searchCurrentPage.value = response.page;
+      searchTotalPages.value = response.totalPages;
       setCachedData(cacheKey, response.results);
       setCachedData(`search:${query.toLowerCase().trim()}:totalPages`, response.totalPages);
     } catch (err: any) {
-      error.value = err.message || "Failed to search movies";
+      error.value = err.message || "Failed to search TV shows";
       throw err;
     } finally {
       loading.value = false;
@@ -333,18 +334,18 @@ export const useMovieStore = defineStore("movie", () => {
     }
   };
 
-  const fetchMovieDetails = async (id: string) => {
-    const cacheKey = `movie:${id}`;
-    const cachedData = getCachedData<Movie>(cacheKey);
+  const fetchTVShowDetails = async (id: string) => {
+    const cacheKey = `tv:${id}`;
+    const cachedData = getCachedData<TVShow>(cacheKey);
     if (!cachedData) {
       // Set loading and clear details BEFORE fetching to show loading state
       loading.value = true;
-      movieDetails.value = null;
+      tvShowDetails.value = null;
     }
     await fetchWithCache(
       cacheKey,
-      () => getMovie(id),
-      (data) => (movieDetails.value = data)
+      () => getTVShow(id),
+      (data) => (tvShowDetails.value = data)
     );
   };
 
@@ -355,7 +356,7 @@ export const useMovieStore = defineStore("movie", () => {
       genres.value = cachedData;
       // Background refresh
       if (!ongoingRequests.value.has(cacheKey)) {
-        const promise = getMovieGenres()
+        const promise = getTVShowGenres()
           .then((data) => {
             setCachedData(cacheKey, data);
             genres.value = data;
@@ -382,7 +383,7 @@ export const useMovieStore = defineStore("movie", () => {
       return;
     }
 
-    const promise = getMovieGenres()
+    const promise = getTVShowGenres()
       .then((data) => {
         setCachedData(cacheKey, data);
         genres.value = data;
@@ -437,7 +438,7 @@ export const useMovieStore = defineStore("movie", () => {
     await promise;
   };
 
-  const loadMoreMovies = async () => {
+  const loadMoreTVShows = async () => {
     if (loadingMore.value || loading.value) return;
     if (currentPage.value >= totalPages.value) return;
     if (!currentListType.value) return;
@@ -447,137 +448,64 @@ export const useMovieStore = defineStore("movie", () => {
 
     try {
       if (currentListType.value === "popular") {
-        await fetchPopularMovies(false);
-      } else if (currentListType.value === "nowPlaying") {
-        await fetchNowPlayingMovies(false);
+        await fetchPopularTVShows(false);
+      } else if (currentListType.value === "onTheAir") {
+        await fetchOnTheAirTVShows(false);
       } else if (currentListType.value === "topRated") {
-        await fetchTopRatedMovies(false);
+        await fetchTopRatedTVShows(false);
       }
     } catch (err) {
       currentPage.value -= 1; // Revert page on error
-      console.error("Failed to load more movies:", err);
+      console.error("Failed to load more TV shows:", err);
     } finally {
       loadingMore.value = false;
     }
   };
 
-  const toggleSearchDrawer = () => {
-    searchDrawerOpen.value = !searchDrawerOpen.value;
-  };
+  const loadMoreSearchTVShows = async () => {
+    if (loadingMore.value || loading.value) return;
+    if (searchCurrentPage.value >= searchTotalPages.value) return;
+    if (!searchQuery.value.trim()) return;
 
-  const applyFilters = async (filters: {
-    query?: string;
-    genres?: number[];
-    year?: number;
-    vote_average_gte?: number;
-  }, reset: boolean = true) => {
-    // Check if filters are active
-    const isActive = !!(filters.query?.trim() || 
-      (filters.genres && filters.genres.length > 0) || 
-      filters.year || 
-      (filters.vote_average_gte !== undefined && filters.vote_average_gte > 0));
-    
-    hasActiveFilters.value = isActive;
-    searchFilters.value = { ...filters };
-
-    if (!isActive) {
-      filteredResults.value = [];
-      filteredCurrentPage.value = 1;
-      filteredTotalPages.value = 1;
-      return;
-    }
-
-    if (reset) {
-      filteredCurrentPage.value = 1;
-      filteredResults.value = [];
-      loading.value = true;
-      error.value = "";
-    } else {
-      filteredLoadingMore.value = true;
-    }
+    loadingMore.value = true;
+    searchCurrentPage.value += 1;
 
     try {
-      const response = await discoverMovies({
-        ...filters,
-        page: filteredCurrentPage.value,
-      });
-
-      if (reset) {
-        filteredResults.value = response.results;
-      } else {
-        filteredResults.value = [...filteredResults.value, ...response.results];
-      }
-      
-      filteredCurrentPage.value = response.page;
-      filteredTotalPages.value = response.totalPages;
-    } catch (err: any) {
-      error.value = err.message || "Failed to apply filters";
-      throw err;
-    } finally {
-      loading.value = false;
-      filteredLoadingMore.value = false;
-    }
-  };
-
-  const clearFilters = () => {
-    searchFilters.value = {};
-    filteredResults.value = [];
-    filteredCurrentPage.value = 1;
-    filteredTotalPages.value = 1;
-    hasActiveFilters.value = false;
-  };
-
-  const loadMoreFilteredMovies = async () => {
-    if (filteredLoadingMore.value || loading.value) return;
-    if (filteredCurrentPage.value >= filteredTotalPages.value) return;
-    if (!hasActiveFilters.value) return;
-
-    filteredLoadingMore.value = true;
-    filteredCurrentPage.value += 1;
-
-    try {
-      await applyFilters(searchFilters.value, false);
+      await searchTVShowsAction(searchQuery.value, false);
     } catch (err) {
-      filteredCurrentPage.value -= 1; // Revert page on error
-      console.error("Failed to load more filtered movies:", err);
+      searchCurrentPage.value -= 1; // Revert page on error
+      console.error("Failed to load more search results:", err);
     } finally {
-      filteredLoadingMore.value = false;
+      loadingMore.value = false;
     }
   };
 
   return {
-    movies,
+    tvShows,
     loading,
     loadingMore,
     error,
     hasAttemptedFetch,
     searchQuery,
     searchResults,
-    movieDetails,
+    tvShowDetails,
     genres,
     configuration,
     currentPage,
     totalPages,
     currentListType,
-    searchDrawerOpen,
-    searchFilters,
-    filteredResults,
-    filteredCurrentPage,
-    filteredTotalPages,
-    filteredLoadingMore,
-    hasActiveFilters,
-    fetchPopularMovies,
-    fetchNowPlayingMovies,
-    fetchTopRatedMovies,
-    fetchUpcomingMovies,
-    searchMoviesAction,
-    fetchMovieDetails,
+    searchCurrentPage,
+    searchTotalPages,
+    fetchPopularTVShows,
+    fetchOnTheAirTVShows,
+    fetchTopRatedTVShows,
+    fetchAiringTodayTVShows,
+    searchTVShowsAction,
+    fetchTVShowDetails,
     fetchGenres,
     fetchConfiguration,
-    loadMoreMovies,
-    toggleSearchDrawer,
-    applyFilters,
-    clearFilters,
-    loadMoreFilteredMovies,
+    loadMoreTVShows,
+    loadMoreSearchTVShows,
   };
 });
+

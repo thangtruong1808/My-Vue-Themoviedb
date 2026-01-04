@@ -2,15 +2,15 @@
   <div class="min-h-screen bg-gray-900 text-white">
     <Navbar />
     <div class="container mx-auto px-4 py-8">
-      <h1 class="text-3xl font-bold mb-8">Popular Movies</h1>
-      <MovieList
-        :movies="movies"
+      <h1 class="text-3xl font-bold mb-8">Popular TV Shows</h1>
+      <TVList
+        :tv-shows="tvShows"
         :loading="loading"
         :error="error"
         :has-attempted-fetch="hasAttemptedFetch"
         :loading-more="loadingMore"
         :has-more="currentPage < totalPages"
-        :on-load-more="loadMoreMovies"
+        :on-load-more="loadMoreTVShows"
       />
     </div>
   </div>
@@ -19,21 +19,21 @@
 <script setup lang="ts">
 import { onBeforeMount, onMounted } from "vue";
 import { storeToRefs } from "pinia";
-import { useMovieStore } from "../stores/movieStore";
+import { useTVStore } from "../stores/tvStore";
 import Navbar from "../components/Navbar.vue";
-import MovieList from "../components/MovieList.vue";
+import TVList from "../components/TVList.vue";
 
-const store = useMovieStore();
+const store = useTVStore();
 // Use storeToRefs to maintain reactivity for state properties
-const { movies, loading, loadingMore, error, hasAttemptedFetch, currentPage, totalPages } = storeToRefs(store);
+const { tvShows, loading, loadingMore, error, hasAttemptedFetch, currentPage, totalPages } = storeToRefs(store);
 // Methods don't need storeToRefs, access directly from store
-const { fetchPopularMovies, loadMoreMovies } = store;
+const { fetchPopularTVShows, loadMoreTVShows } = store;
 
-// Set loading to true and clear movies BEFORE first render to show skeleton
-// This prevents "No movies found" or wrong movies from showing before fetch starts
+// Set loading to true and clear tvShows BEFORE first render to show skeleton
+// This prevents "No TV shows found" or wrong TV shows from showing before fetch starts
 onBeforeMount(() => {
-  // Always clear movies when entering this page to avoid showing wrong data
-  movies.value = [];
+  // Always clear tvShows when entering this page to avoid showing wrong data
+  tvShows.value = [];
   if (!loading.value) {
     loading.value = true;
   }
@@ -41,6 +41,7 @@ onBeforeMount(() => {
 });
 
 onMounted(() => {
-  fetchPopularMovies();
+  fetchPopularTVShows();
 });
 </script>
+

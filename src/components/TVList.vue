@@ -1,10 +1,10 @@
 <template>
-  <!-- Priority 1: Show movies if we have them (regardless of loading state) -->
-  <div v-if="movies && Array.isArray(movies) && movies.length > 0">
+  <!-- Priority 1: Show TV shows if we have them (regardless of loading state) -->
+  <div v-if="tvShows && Array.isArray(tvShows) && tvShows.length > 0">
     <div
       class="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6"
     >
-      <MovieCard v-for="movie in movies" :key="movie.id" :movie="movie" />
+      <TVCard v-for="tvShow in tvShows" :key="tvShow.id" :tvShow="tvShow" />
     </div>
     <!-- Infinite scroll trigger -->
     <div
@@ -12,7 +12,7 @@
       class="w-full h-20 flex items-center justify-center mt-8"
       v-show="hasMore && !loadingMore"
     >
-      <div class="text-gray-400 text-sm">Scroll for more movies</div>
+      <div class="text-gray-400 text-sm">Scroll for more TV shows</div>
     </div>
     <!-- Loading more indicator -->
     <div
@@ -65,7 +65,7 @@
   </div>
   <!-- Priority 4: Show empty state only after fetch attempt completed -->
   <div v-else-if="props.hasAttemptedFetch && !loading" class="text-center py-20">
-    <div class="text-xl text-gray-400">No movies found</div>
+    <div class="text-xl text-gray-400">No TV shows found</div>
   </div>
   <!-- Priority 5: Default to skeleton if we haven't attempted fetch yet -->
   <div
@@ -92,10 +92,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch, nextTick } from "vue";
-import MovieCard from "./MovieCard.vue";
+import TVCard from "./TVCard.vue";
 
 const props = withDefaults(defineProps<{
-  movies: any[];
+  tvShows: any[];
   loading: boolean;
   error: string;
   hasAttemptedFetch?: boolean;
@@ -165,3 +165,4 @@ onUnmounted(() => {
   }
 });
 </script>
+
