@@ -61,6 +61,11 @@ export const useMovieStore = defineStore("movie", () => {
     genres?: number[];
     year?: number;
     vote_average_gte?: number;
+    language?: string;
+    runtime_min?: number;
+    runtime_max?: number;
+    release_date_from?: string;
+    release_date_to?: string;
   }>({});
   const filteredResults = ref<Movie[]>([]);
   const filteredCurrentPage = ref(1);
@@ -470,12 +475,22 @@ export const useMovieStore = defineStore("movie", () => {
     genres?: number[];
     year?: number;
     vote_average_gte?: number;
+    language?: string;
+    runtime_min?: number;
+    runtime_max?: number;
+    release_date_from?: string;
+    release_date_to?: string;
   }, reset: boolean = true) => {
     // Check if filters are active
     const isActive = !!(filters.query?.trim() || 
       (filters.genres && filters.genres.length > 0) || 
       filters.year || 
-      (filters.vote_average_gte !== undefined && filters.vote_average_gte > 0));
+      (filters.vote_average_gte !== undefined && filters.vote_average_gte > 0) ||
+      filters.language ||
+      filters.runtime_min !== undefined ||
+      filters.runtime_max !== undefined ||
+      filters.release_date_from ||
+      filters.release_date_to);
     
     hasActiveFilters.value = isActive;
     searchFilters.value = { ...filters };

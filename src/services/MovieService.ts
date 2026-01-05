@@ -82,6 +82,11 @@ export const discoverMovies = async (filters: {
   genres?: number[];
   year?: number;
   vote_average_gte?: number;
+  language?: string;
+  runtime_min?: number;
+  runtime_max?: number;
+  release_date_from?: string;
+  release_date_to?: string;
   page?: number;
 }) => {
   const params = new URLSearchParams();
@@ -101,6 +106,26 @@ export const discoverMovies = async (filters: {
   
   if (filters.vote_average_gte !== undefined) {
     params.append("vote_average.gte", filters.vote_average_gte.toString());
+  }
+  
+  if (filters.language) {
+    params.append("with_original_language", filters.language);
+  }
+  
+  if (filters.runtime_min !== undefined) {
+    params.append("with_runtime.gte", filters.runtime_min.toString());
+  }
+  
+  if (filters.runtime_max !== undefined) {
+    params.append("with_runtime.lte", filters.runtime_max.toString());
+  }
+  
+  if (filters.release_date_from) {
+    params.append("primary_release_date.gte", filters.release_date_from);
+  }
+  
+  if (filters.release_date_to) {
+    params.append("primary_release_date.lte", filters.release_date_to);
   }
   
   if (filters.page) {

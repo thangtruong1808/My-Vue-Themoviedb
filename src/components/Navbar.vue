@@ -10,7 +10,7 @@
       </router-link>
       <div class="hidden md:flex space-x-6">
         <router-link to="/" class="nav-link"
-          >Popular</router-link
+          >Popular Movies</router-link
         >
         <router-link to="/now-playing" class="nav-link"
           >Now Playing</router-link

@@ -12,7 +12,7 @@
   <Transition name="drawer">
     <div
       v-if="isOpen"
-      class="fixed left-0 top-0 h-full w-full md:w-96 bg-gray-800 z-50 shadow-2xl flex flex-col"
+      class="fixed left-0 top-0 h-full w-full md:w-96 bg-gray-800 z-50 shadow-2xl flex flex-col overflow-y-auto"
       @click.stop
     >
       <div class="p-4">
@@ -122,6 +122,80 @@
           </div>
         </div>
 
+        <!-- Language -->
+        <div class="mb-3">
+          <label class="block text-xs font-medium text-gray-300 mb-1">
+            Language
+          </label>
+          <select
+            v-model="localFilters.language"
+            class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            @change="debouncedApplyFilters"
+          >
+            <option value="">All Languages</option>
+            <option value="en">English</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="it">Italian</option>
+            <option value="ja">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="zh">Chinese</option>
+            <option value="pt">Portuguese</option>
+            <option value="ru">Russian</option>
+            <option value="hi">Hindi</option>
+          </select>
+        </div>
+
+        <!-- Runtime -->
+        <div class="mb-3">
+          <label class="block text-xs font-medium text-gray-300 mb-1">
+            Runtime
+          </label>
+          <select
+            v-model="selectedRuntime"
+            class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            @change="debouncedApplyFilters"
+          >
+            <option value="">Any Runtime</option>
+            <option value="under_60">Under 60 minutes</option>
+            <option value="60_90">60-90 minutes</option>
+            <option value="90_120">90-120 minutes</option>
+            <option value="120_150">120-150 minutes</option>
+            <option value="over_150">Over 150 minutes</option>
+          </select>
+        </div>
+
+        <!-- Release Date Range -->
+        <div class="mb-3">
+          <label class="block text-xs font-medium text-gray-300 mb-1">
+            Release Date Range
+          </label>
+          <div class="space-y-2">
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">From Date</label>
+              <input
+                v-model="localFilters.release_date_from"
+                type="date"
+                class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                @input="debouncedApplyFilters"
+              />
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">To Date</label>
+              <input
+                v-model="localFilters.release_date_to"
+                type="date"
+                class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                @input="validateDates"
+              />
+            </div>
+            <div v-if="dateError" class="text-xs text-red-400 mt-1">
+              {{ dateError }}
+            </div>
+          </div>
+        </div>
+
         <!-- Clear Filters Button -->
         <button
           @click="clearFilters"
@@ -145,23 +219,70 @@ const { toggleSearchDrawer, applyFilters, clearFilters: clearStoreFilters, fetch
 
 const isOpen = computed(() => searchDrawerOpen.value);
 
+// Runtime options
+const runtimeOptions = [
+  { value: '', label: 'Any Runtime', min: undefined, max: undefined },
+  { value: 'under_60', label: 'Under 60 minutes', min: undefined, max: 59 },
+  { value: '60_90', label: '60-90 minutes', min: 60, max: 90 },
+  { value: '90_120', label: '90-120 minutes', min: 90, max: 120 },
+  { value: '120_150', label: '120-150 minutes', min: 120, max: 150 },
+  { value: 'over_150', label: 'Over 150 minutes', min: 151, max: undefined },
+];
+
 // Local filter state - sync with store's searchFilters
 const localFilters = ref({
   query: "",
   genres: [] as number[],
   year: undefined as number | undefined,
   vote_average_gte: undefined as number | undefined,
+  language: undefined as string | undefined,
+  runtime_min: undefined as number | undefined,
+  runtime_max: undefined as number | undefined,
+  release_date_from: undefined as string | undefined,
+  release_date_to: undefined as string | undefined,
 });
 
 const genresLoading = ref(false);
 const currentYear = new Date().getFullYear();
+const dateError = ref("");
+
+// Runtime computed property
+const selectedRuntime = computed({
+  get: () => {
+    const option = runtimeOptions.find(opt => 
+      opt.min === localFilters.value.runtime_min && 
+      opt.max === localFilters.value.runtime_max
+    );
+    return option?.value || '';
+  },
+  set: (value: string) => {
+    const option = runtimeOptions.find(opt => opt.value === value);
+    localFilters.value.runtime_min = option?.min;
+    localFilters.value.runtime_max = option?.max;
+  }
+});
+
+// Date validation
+const validateDates = () => {
+  if (localFilters.value.release_date_from && localFilters.value.release_date_to) {
+    if (localFilters.value.release_date_to < localFilters.value.release_date_from) {
+      dateError.value = "To date must be greater than or equal to from date";
+      return false;
+    }
+  }
+  dateError.value = "";
+  debouncedApplyFilters();
+  return true;
+};
 
 let debounceTimeout: number | null = null;
 
 const debouncedApplyFilters = () => {
   if (debounceTimeout) clearTimeout(debounceTimeout);
   debounceTimeout = setTimeout(() => {
-    applyFilters(localFilters.value);
+    if (!dateError.value) {
+      applyFilters(localFilters.value);
+    }
   }, 500);
 };
 
@@ -175,7 +296,13 @@ const clearFilters = () => {
     genres: [],
     year: undefined,
     vote_average_gte: undefined,
+    language: undefined,
+    runtime_min: undefined,
+    runtime_max: undefined,
+    release_date_from: undefined,
+    release_date_to: undefined,
   };
+  dateError.value = "";
   clearStoreFilters();
 };
 
@@ -197,6 +324,11 @@ watch(isOpen, (newValue) => {
         genres: searchFilters.value.genres || [],
         year: searchFilters.value.year,
         vote_average_gte: searchFilters.value.vote_average_gte,
+        language: searchFilters.value.language,
+        runtime_min: searchFilters.value.runtime_min,
+        runtime_max: searchFilters.value.runtime_max,
+        release_date_from: searchFilters.value.release_date_from,
+        release_date_to: searchFilters.value.release_date_to,
       };
     }
   }
@@ -219,6 +351,11 @@ onMounted(() => {
       genres: searchFilters.value.genres || [],
       year: searchFilters.value.year,
       vote_average_gte: searchFilters.value.vote_average_gte,
+      language: searchFilters.value.language,
+      runtime_min: searchFilters.value.runtime_min,
+      runtime_max: searchFilters.value.runtime_max,
+      release_date_from: searchFilters.value.release_date_from,
+      release_date_to: searchFilters.value.release_date_to,
     };
   }
 });
