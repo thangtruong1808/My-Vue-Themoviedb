@@ -1,12 +1,12 @@
 <template>
-  <footer class="footer">
+  <footer class="bg-gray-100 dark:bg-gray-800 border-t border-gray-300 dark:border-gray-700 bottom-0 left-0 right-0 z-30 w-full">
     <div class="container mx-auto px-4 py-4">
       <!-- Row 1: Copyright and Social Media -->
-      <div class="flex flex-col md:flex-row justify-between items-center mb-4 pb-4 border-b border-gray-700">
+      <div class="flex flex-col md:flex-row justify-between items-center mb-4 pb-4 border-b border-gray-300 dark:border-gray-700">
         <div class="mb-3 md:mb-0">
-          <p class="text-gray-400 text-sm text-center md:text-left">
+          <p class="text-black dark:text-gray-400 text-sm text-center md:text-left">
             <!-- &copy; {{ currentYear }} MovieDB. All rights reserved. -->
-             My-Vue-Themoviedb Version 1.0.0 - Frontend Application 
+             MyVue-Themoviedb Version 1.0.0 - Frontend Application 
           </p>
         </div>
         <div class="flex space-x-4">
@@ -15,7 +15,7 @@
             href="https://facebook.com"
             target="_blank"
             rel="noopener noreferrer"
-            class="social-icon"
+            class="text-gray-600 dark:text-gray-400 hover:text-blue-400 transition-colors"
             aria-label="Facebook"
           >
             <svg
@@ -35,7 +35,7 @@
             href="https://linkedin.com"
             target="_blank"
             rel="noopener noreferrer"
-            class="social-icon"
+            class="text-gray-600 dark:text-gray-400 hover:text-blue-400 transition-colors"
             aria-label="LinkedIn"
           >
             <svg
@@ -55,7 +55,7 @@
             href="https://github.com"
             target="_blank"
             rel="noopener noreferrer"
-            class="social-icon"
+            class="text-gray-600 dark:text-gray-400 hover:text-blue-400 transition-colors"
             aria-label="GitHub"
           >
             <svg
@@ -78,28 +78,28 @@
       <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <!-- Developer Info -->
         <div class="w-full lg:w-auto">
-          <p class="text-gray-400 text-xs text-center lg:text-left">
-            <span class="text-gray-300 font-medium">Developed by:</span> Thang Truong - thangtruong1808@gmail.com
+          <p class="text-black dark:text-gray-400 text-xs text-center lg:text-left">
+            <span class="text-black dark:text-gray-300 font-medium">Developed by:</span> Thang Truong - thangtruong1808@gmail.com
           </p>
         </div>
 
         <!-- Libraries Used -->
         <div class="w-full lg:w-auto">
-          <p class="text-gray-400 text-xs text-center lg:text-left mb-2 lg:mb-0">
-            <span class="text-gray-300 font-medium">Built with:</span>
+          <p class="text-gray-600 dark:text-gray-400 text-xs text-center lg:text-left mb-2 lg:mb-0">
+            <span class="text-gray-700 dark:text-gray-300 font-medium">Built with:</span>
           </p>
           <div class="flex flex-wrap justify-center lg:justify-start gap-x-3 gap-y-1 text-xs">
-            <span class="text-gray-400">Vue 3</span>
-            <span class="text-gray-500">•</span>
-            <span class="text-gray-400">Vue Router</span>
-            <span class="text-gray-500">•</span>
-            <span class="text-gray-400">Pinia</span>
-            <span class="text-gray-500">•</span>
-            <span class="text-gray-400">TypeScript</span>
-            <span class="text-gray-500">•</span>
-            <span class="text-gray-400">Tailwind CSS</span>
-            <span class="text-gray-500">•</span>
-            <span class="text-gray-400">Vite</span>
+            <span class="text-black dark:text-gray-400">Vue 3</span>
+            <span class="text-black dark:text-gray-500">•</span>
+            <span class="text-black dark:text-gray-400">Vue Router</span>
+            <span class="text-black dark:text-gray-500">•</span>
+            <span class="text-black dark:text-gray-400">Pinia</span>
+            <span class="text-black dark:text-gray-500">•</span>
+            <span class="text-black dark:text-gray-400">TypeScript</span>
+            <span class="text-black dark:text-gray-500">•</span>
+            <span class="text-black dark:text-gray-400">Tailwind CSS</span>
+            <span class="text-black dark:text-gray-500">•</span>
+            <span class="text-black dark:text-gray-400">Vite</span>
           </div>
         </div>
       </div>
@@ -108,37 +108,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-
-const currentYear = computed(() => new Date().getFullYear());
 </script>
 
-<style scoped>
-.footer {
-  background-color: #1f2937; /* gray-800 */
-  border-top: 1px solid #374151; /* gray-700 */
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 30;
-  width: 100%;
-}
-
-.social-icon {
-  color: #9ca3af; /* gray-400 */
-  transition: color 0.2s ease;
-}
-
-.social-icon:hover {
-  color: #60a5fa; /* blue-400 */
-}
-
-/* Responsive adjustments */
-@media (max-width: 640px) {
-  .footer {
-    font-size: 0.75rem;
-  }
-}
-</style>
 

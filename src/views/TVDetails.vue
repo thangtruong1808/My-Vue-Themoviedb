@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-900 text-white pb-32">
+  <div class="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white pb-32">
     <Navbar />
     
     <!-- Hero Section with Backdrop -->
@@ -31,7 +31,7 @@
             <div class="flex-1 pb-4">
               <h1 class="text-4xl md:text-5xl font-bold mb-3 drop-shadow-lg">
                 {{ tvShowDetails.name }}
-                <span v-if="tvShowDetails.first_air_date" class="text-2xl md:text-3xl font-normal text-gray-300">
+                <span v-if="tvShowDetails.first_air_date" class="text-2xl md:text-3xl font-normal text-gray-700 dark:text-gray-300">
                   ({{ new Date(tvShowDetails.first_air_date).getFullYear() }})
                 </span>
               </h1>
@@ -39,7 +39,7 @@
                 <div v-if="tvShowDetails.first_air_date" class="flex items-center">
                   <span>{{ formatDate(tvShowDetails.first_air_date) }}</span>
                 </div>
-                <span v-if="tvShowDetails.genres && tvShowDetails.genres.length > 0" class="text-gray-400">•</span>
+                <span v-if="tvShowDetails.genres && tvShowDetails.genres.length > 0" class="text-gray-600 dark:text-gray-400">•</span>
                 <div v-if="tvShowDetails.genres && tvShowDetails.genres.length > 0" class="flex flex-wrap gap-2">
                   <span
                     v-for="(genre, index) in tvShowDetails.genres"
@@ -49,7 +49,7 @@
                     {{ genre.name }}
                   </span>
                 </div>
-                <span v-if="episodeRuntime" class="text-gray-400">•</span>
+                <span v-if="episodeRuntime" class="text-gray-600 dark:text-gray-400">•</span>
                 <span v-if="episodeRuntime">{{ episodeRuntime }}</span>
               </div>
               <div class="flex items-center gap-4">
@@ -62,7 +62,7 @@
                 <button
                   v-if="trailerVideo"
                   @click="openTrailer"
-                  class="flex items-center gap-2 px-4 py-2 bg-white text-black rounded hover:bg-gray-200 transition-colors font-semibold"
+                  class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-black dark:text-white rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-semibold"
                 >
                   <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
@@ -80,7 +80,7 @@
     <div class="container mx-auto px-4 pt-6 max-w-7xl">
       <button
         @click="goBack"
-        class="back-button flex items-center text-gray-300 hover:text-white transition-colors mb-6 hover:bg-transparent border-2 border-transparent hover:border-blue-500 rounded-lg px-3 py-2"
+        class="back-button flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors mb-6 hover:bg-transparent border-2 border-transparent hover:border-blue-500 rounded-lg px-3 py-2"
       >
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -97,7 +97,7 @@
           <!-- Overview -->
           <div v-if="tvShowDetails.overview" class="mb-8 order-1">
             <h2 class="text-2xl font-bold mb-3">Overview</h2>
-            <p class="text-gray-300 leading-relaxed break-words text-justify">{{ tvShowDetails.overview }}</p>
+            <p class="text-gray-700 dark:text-gray-300 leading-relaxed break-words text-justify">{{ tvShowDetails.overview }}</p>
           </div>
 
           <!-- Facts Section (Mobile/Tablet - shown above Top Billed Cast) -->
@@ -118,7 +118,7 @@
             <div class="grid grid-cols-2 gap-6">
               <div v-if="tvShowDetails.status">
                 <h3 class="font-semibold mb-2">Status</h3>
-                <p class="text-gray-300 text-sm">{{ tvShowDetails.status }}</p>
+                <p class="text-gray-700 dark:text-gray-300 text-sm">{{ tvShowDetails.status }}</p>
               </div>
 
               <div v-if="tvShowDetails.original_language">
@@ -147,7 +147,7 @@
                   <span
                     v-for="network in tvShowDetails.networks"
                     :key="network.id"
-                    class="px-2 py-1 bg-gray-800 rounded text-sm text-gray-300"
+                    class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm text-gray-700 dark:text-gray-300"
                   >
                     {{ network.name }}
                   </span>
@@ -160,7 +160,7 @@
                   <span
                     v-for="creator in tvShowDetails.created_by"
                     :key="creator.id"
-                    class="px-2 py-1 bg-gray-800 rounded text-sm text-gray-300"
+                    class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm text-gray-700 dark:text-gray-300"
                   >
                     {{ creator.name }}
                   </span>
@@ -173,7 +173,7 @@
                   <span
                     v-for="genre in tvShowDetails.genres"
                     :key="genre.id"
-                    class="px-2 py-1 bg-gray-800 rounded text-sm text-gray-300"
+                    class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm text-gray-700 dark:text-gray-300"
                   >
                     {{ genre.name }}
                   </span>
@@ -186,7 +186,7 @@
                   <span
                     v-for="keyword in tvShowDetails.keywords.keywords"
                     :key="keyword.id"
-                    class="px-2 py-1 bg-gray-800 rounded text-sm text-gray-300 hover:bg-gray-700 cursor-pointer"
+                    class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
                   >
                     {{ keyword.name }}
                   </span>
@@ -226,15 +226,15 @@
                       />
                       <div
                         v-else
-                        class="w-full aspect-[2/3] bg-gray-700 rounded-lg flex items-center justify-center"
+                        class="w-full aspect-[2/3] bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center"
                       >
-                        <svg class="w-16 h-16 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-16 h-16 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                           <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
                         </svg>
                       </div>
                     </div>
                     <div class="font-semibold text-sm">{{ actor.name }}</div>
-                    <div class="text-xs text-gray-400 mt-1">{{ actor.character }}</div>
+                    <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">{{ actor.character }}</div>
                   </div>
                 </div>
               </div>
@@ -243,7 +243,7 @@
               <button
                 v-if="canScrollCastLeft"
                 @click="scrollCastLeft"
-                class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-gray-800/90 hover:bg-gray-700 text-white rounded-full p-2 shadow-lg transition-all"
+                class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-gray-200/90 dark:bg-gray-800/90 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-full p-2 shadow-lg transition-all"
                 aria-label="Previous cast"
               >
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,7 +254,7 @@
               <button
                 v-if="canScrollCastRight"
                 @click="scrollCastRight"
-                class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-gray-800/90 hover:bg-gray-700 text-white rounded-full p-2 shadow-lg transition-all"
+                class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-gray-200/90 dark:bg-gray-800/90 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-full p-2 shadow-lg transition-all"
                 aria-label="Next cast"
               >
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,12 +284,12 @@
                   :class="[
                     'px-4 py-2 text-sm font-semibold transition-colors',
                     activeMediaTab === tab.id
-                      ? 'text-white border-b-2 border-blue-500'
-                      : 'text-gray-400 hover:text-gray-300'
+                      ? 'text-gray-900 dark:text-white border-b-2 border-blue-500'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
                   ]"
                 >
                   {{ tab.label }}
-                  <span v-if="tab.count" class="ml-1 text-gray-500">({{ tab.count }})</span>
+                  <span v-if="tab.count" class="ml-1 text-gray-500 dark:text-gray-400">({{ tab.count }})</span>
                 </button>
               </div>
             </div>
@@ -302,7 +302,7 @@
                 class="cursor-pointer group"
                 @click="openVideo(video.key)"
               >
-                <div class="relative aspect-video bg-gray-800 rounded-lg overflow-hidden mb-2">
+                <div class="relative aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden mb-2">
                   <img
                     :src="`https://img.youtube.com/vi/${video.key}/maxresdefault.jpg`"
                     :alt="video.name"
@@ -318,10 +318,10 @@
                   </div>
                 </div>
                 <div class="text-sm font-semibold">{{ video.name }}</div>
-                <div class="text-xs text-gray-400">{{ video.type }}</div>
+                <div class="text-xs text-gray-600 dark:text-gray-400">{{ video.type }}</div>
               </div>
             </div>
-            <div v-else-if="activeMediaTab === 'videos'" class="text-gray-400 py-8 text-center">
+            <div v-else-if="activeMediaTab === 'videos'" class="text-gray-600 dark:text-gray-400 py-8 text-center">
               No videos available
             </div>
 
@@ -340,7 +340,7 @@
                 />
               </div>
             </div>
-            <div v-else-if="activeMediaTab === 'backdrops'" class="text-gray-400 py-8 text-center">
+            <div v-else-if="activeMediaTab === 'backdrops'" class="text-gray-600 dark:text-gray-400 py-8 text-center">
               No backdrops available
             </div>
 
@@ -359,7 +359,7 @@
                 />
               </div>
             </div>
-            <div v-else-if="activeMediaTab === 'posters'" class="text-gray-400 py-8 text-center">
+            <div v-else-if="activeMediaTab === 'posters'" class="text-gray-600 dark:text-gray-400 py-8 text-center">
               No posters available
             </div>
           </div>
@@ -410,7 +410,7 @@
               <button
                 v-if="canScrollRecommendationsLeft"
                 @click="scrollRecommendationsLeft"
-                class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-gray-800/90 hover:bg-gray-700 text-white rounded-full p-2 shadow-lg transition-all"
+                class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-gray-200/90 dark:bg-gray-800/90 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-full p-2 shadow-lg transition-all"
                 aria-label="Previous recommendations"
               >
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -421,7 +421,7 @@
               <button
                 v-if="canScrollRecommendationsRight"
                 @click="scrollRecommendationsRight"
-                class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-gray-800/90 hover:bg-gray-700 text-white rounded-full p-2 shadow-lg transition-all"
+                class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-gray-200/90 dark:bg-gray-800/90 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-full p-2 shadow-lg transition-all"
                 aria-label="Next recommendations"
               >
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

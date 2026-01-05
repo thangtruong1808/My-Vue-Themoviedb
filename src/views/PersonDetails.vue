@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-gray-900 text-white pb-32">
+  <div class="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white pb-32">
     <Navbar />
     
     <!-- Back Button -->
     <div class="container mx-auto px-4 pt-6">
       <button
         @click="goBack"
-        class="back-button flex items-center text-gray-300 hover:text-white transition-colors mb-6"
+        class="back-button flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors mb-6"
       >
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -29,9 +29,9 @@
             />
             <div
               v-else
-              class="w-full aspect-[2/3] bg-gray-800 rounded-lg flex items-center justify-center"
+              class="w-full aspect-[2/3] bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center"
             >
-              <svg class="w-32 h-32 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-32 h-32 text-gray-500 dark:text-gray-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
               </svg>
             </div>
@@ -43,33 +43,33 @@
               <h3 class="font-semibold text-lg mb-3">Personal Info</h3>
               <div class="grid grid-cols-2 lg:grid-cols-1 gap-3 text-sm">
                 <div v-if="personDetails.known_for_department">
-                  <div class="font-semibold text-gray-400">Known For</div>
-                  <div class="text-gray-300">{{ personDetails.known_for_department }}</div>
+                  <div class="font-semibold text-gray-600 dark:text-gray-400">Known For</div>
+                  <div class="text-gray-700 dark:text-gray-300">{{ personDetails.known_for_department }}</div>
                 </div>
                 <div v-if="personDetails.known_for_department">
-                  <div class="font-semibold text-gray-400">Known Credits</div>
-                  <div class="text-gray-300">{{ totalCredits }}</div>
+                  <div class="font-semibold text-gray-600 dark:text-gray-400">Known Credits</div>
+                  <div class="text-gray-700 dark:text-gray-300">{{ totalCredits }}</div>
                 </div>
                 <div v-if="personDetails.gender !== undefined">
-                  <div class="font-semibold text-gray-400">Gender</div>
-                  <div class="text-gray-300">{{ personDetails.gender === 1 ? 'Female' : personDetails.gender === 2 ? 'Male' : 'Non-binary' }}</div>
+                  <div class="font-semibold text-gray-600 dark:text-gray-400">Gender</div>
+                  <div class="text-gray-700 dark:text-gray-300">{{ personDetails.gender === 1 ? 'Female' : personDetails.gender === 2 ? 'Male' : 'Non-binary' }}</div>
                 </div>
                 <div v-if="personDetails.birthday">
-                  <div class="font-semibold text-gray-400">Birthday</div>
-                  <div class="text-gray-300">
+                  <div class="font-semibold text-gray-600 dark:text-gray-400">Birthday</div>
+                  <div class="text-gray-700 dark:text-gray-300">
                     {{ formatDate(personDetails.birthday) }}
-                    <span v-if="personDetails.birthday" class="text-gray-500">
+                    <span v-if="personDetails.birthday" class="text-gray-500 dark:text-gray-400">
                       ({{ calculateAge(personDetails.birthday) }} years old)
                     </span>
                   </div>
                 </div>
                 <div v-if="personDetails.place_of_birth">
-                  <div class="font-semibold text-gray-400">Place of Birth</div>
-                  <div class="text-gray-300">{{ personDetails.place_of_birth }}</div>
+                  <div class="font-semibold text-gray-600 dark:text-gray-400">Place of Birth</div>
+                  <div class="text-gray-700 dark:text-gray-300">{{ personDetails.place_of_birth }}</div>
                 </div>
                 <div v-if="personDetails.also_known_as && personDetails.also_known_as.length > 0" class="col-span-2 lg:col-span-1">
-                  <div class="font-semibold text-gray-400">Also Known As</div>
-                  <div class="text-gray-300 space-y-1">
+                  <div class="font-semibold text-gray-600 dark:text-gray-400">Also Known As</div>
+                  <div class="text-gray-700 dark:text-gray-300 space-y-1">
                     <div v-for="(name, index) in personDetails.also_known_as" :key="index">{{ name }}</div>
                   </div>
                 </div>
@@ -88,7 +88,7 @@
           <!-- Biography -->
           <div v-if="personDetails.biography" class="mb-8">
             <h2 class="text-2xl font-bold mb-4">Biography</h2>
-            <p class="text-gray-300 leading-relaxed whitespace-pre-line text-justify">{{ personDetails.biography }}</p>
+            <p class="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line text-justify">{{ personDetails.biography }}</p>
           </div>
 
           <!-- Known For -->
@@ -111,15 +111,15 @@
                   />
                   <div
                     v-else
-                    class="w-full aspect-[2/3] bg-gray-800 rounded-lg flex items-center justify-center"
+                    class="w-full aspect-[2/3] bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center"
                   >
-                    <svg class="w-12 h-12 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-12 h-12 text-gray-500 dark:text-gray-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
                     </svg>
                   </div>
                 </div>
                 <div class="font-semibold text-sm">{{ item.title || item.name }}</div>
-                <div class="text-xs text-gray-400 mt-1">{{ item.character || item.job }}</div>
+                <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">{{ item.character || item.job }}</div>
               </div>
             </div>
           </div>
@@ -136,12 +136,12 @@
                   :class="[
                     'px-4 py-2 text-sm font-semibold transition-colors',
                     activeCreditFilter === filter.id
-                      ? 'text-white border-b-2 border-blue-500'
-                      : 'text-gray-400 hover:text-gray-300'
+                      ? 'text-gray-900 dark:text-white border-b-2 border-blue-500'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
                   ]"
                 >
                   {{ filter.label }}
-                  <span v-if="filter.count" class="ml-1 text-gray-500">({{ filter.count }})</span>
+                  <span v-if="filter.count" class="ml-1 text-gray-500 dark:text-gray-400">({{ filter.count }})</span>
                 </button>
               </div>
             </div>
@@ -164,17 +164,17 @@
                   />
                   <div
                     v-else
-                    class="w-full aspect-[2/3] bg-gray-800 rounded flex items-center justify-center"
+                    class="w-full aspect-[2/3] bg-gray-100 dark:bg-gray-800 rounded flex items-center justify-center"
                   >
-                    <svg class="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-8 h-8 text-gray-500 dark:text-gray-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
                     </svg>
                   </div>
                 </div>
                 <div class="flex-1">
                   <div class="font-semibold">{{ credit.title || credit.name }}</div>
-                  <div class="text-sm text-gray-400">{{ credit.character }}</div>
-                  <div class="text-xs text-gray-500 mt-1">
+                  <div class="text-sm text-gray-600 dark:text-gray-400">{{ credit.character }}</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     {{ credit.release_date ? new Date(credit.release_date).getFullYear() : credit.first_air_date ? new Date(credit.first_air_date).getFullYear() : '—' }}
                     <span v-if="credit.media_type === 'tv'"> • TV Series</span>
                   </div>
@@ -200,9 +200,9 @@
                   />
                   <div
                     v-else
-                    class="w-full aspect-[2/3] bg-gray-800 rounded flex items-center justify-center"
+                    class="w-full aspect-[2/3] bg-gray-100 dark:bg-gray-800 rounded flex items-center justify-center"
                   >
-                    <svg class="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-8 h-8 text-gray-500 dark:text-gray-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
                     </svg>
                   </div>
@@ -236,9 +236,9 @@
                   />
                   <div
                     v-else
-                    class="w-full aspect-[2/3] bg-gray-800 rounded flex items-center justify-center"
+                    class="w-full aspect-[2/3] bg-gray-100 dark:bg-gray-800 rounded flex items-center justify-center"
                   >
-                    <svg class="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-8 h-8 text-gray-500 dark:text-gray-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
                     </svg>
                   </div>

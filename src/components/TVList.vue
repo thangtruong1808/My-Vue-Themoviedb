@@ -12,7 +12,7 @@
       class="w-full h-20 flex items-center justify-center mt-8"
       v-show="hasMore && !loadingMore"
     >
-      <div class="text-gray-400 text-sm">Scroll for more TV shows</div>
+      <div class="text-gray-600 dark:text-gray-400 text-sm">Scroll for more TV shows</div>
     </div>
     <!-- Loading more indicator -->
     <div
@@ -23,15 +23,15 @@
         <div
           v-for="n in 5"
           :key="n"
-          class="bg-gray-800 rounded-lg overflow-hidden shadow-lg animate-pulse"
+          class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg animate-pulse"
         >
-          <div class="w-full h-64 bg-gray-700"></div>
+          <div class="w-full h-64 bg-gray-200 dark:bg-gray-700"></div>
           <div class="p-4">
-            <div class="h-4 bg-gray-700 rounded mb-2"></div>
-            <div class="h-3 bg-gray-700 rounded mb-2 w-3/4"></div>
+            <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+            <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded mb-2 w-3/4"></div>
             <div class="flex items-center">
-              <div class="h-4 bg-gray-700 rounded w-8 mr-2"></div>
-              <div class="h-3 bg-gray-700 rounded w-12"></div>
+              <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-8 mr-2"></div>
+              <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-12"></div>
             </div>
           </div>
         </div>
@@ -46,26 +46,26 @@
     <div
       v-for="n in 10"
       :key="n"
-      class="bg-gray-800 rounded-lg overflow-hidden shadow-lg animate-pulse"
+      class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg animate-pulse"
     >
-      <div class="w-full h-64 bg-gray-700"></div>
+      <div class="w-full h-64 bg-gray-200 dark:bg-gray-700"></div>
       <div class="p-4">
-        <div class="h-4 bg-gray-700 rounded mb-2"></div>
-        <div class="h-3 bg-gray-700 rounded mb-2 w-3/4"></div>
+        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+        <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded mb-2 w-3/4"></div>
         <div class="flex items-center">
-          <div class="h-4 bg-gray-700 rounded w-8 mr-2"></div>
-          <div class="h-3 bg-gray-700 rounded w-12"></div>
+          <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-8 mr-2"></div>
+          <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-12"></div>
         </div>
       </div>
     </div>
   </div>
   <!-- Priority 3: Show error message -->
   <div v-else-if="error" class="text-center py-20">
-    <div class="text-xl text-red-500">{{ error }}</div>
+    <div class="text-xl text-red-500 dark:text-red-400">{{ error }}</div>
   </div>
   <!-- Priority 4: Show empty state only after fetch attempt completed -->
   <div v-else-if="props.hasAttemptedFetch && !loading" class="text-center py-20">
-    <div class="text-xl text-gray-400">No TV shows found</div>
+    <div class="text-xl text-gray-600 dark:text-gray-400">No TV shows found</div>
   </div>
   <!-- Priority 5: Default to skeleton if we haven't attempted fetch yet -->
   <div
@@ -75,15 +75,15 @@
     <div
       v-for="n in 10"
       :key="n"
-      class="bg-gray-800 rounded-lg overflow-hidden shadow-lg animate-pulse"
+      class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg animate-pulse"
     >
-      <div class="w-full h-64 bg-gray-700"></div>
+      <div class="w-full h-64 bg-gray-200 dark:bg-gray-700"></div>
       <div class="p-4">
-        <div class="h-4 bg-gray-700 rounded mb-2"></div>
-        <div class="h-3 bg-gray-700 rounded mb-2 w-3/4"></div>
+        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+        <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded mb-2 w-3/4"></div>
         <div class="flex items-center">
-          <div class="h-4 bg-gray-700 rounded w-8 mr-2"></div>
-          <div class="h-3 bg-gray-700 rounded w-12"></div>
+          <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-8 mr-2"></div>
+          <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-12"></div>
         </div>
       </div>
     </div>

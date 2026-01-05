@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen bg-gray-900 text-white pb-32">
+  <div class="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white pb-32">
     <Navbar />
     <div class="container mx-auto px-4 py-8">
       <h1 class="text-3xl font-bold mb-8">
         Popular TV Shows
-        <span v-if="totalResults > 0" class="text-xl font-normal text-gray-400 ml-2">
+        <span v-if="totalResults > 0" class="text-xl font-normal text-gray-600 dark:text-gray-400 ml-2">
           ({{ totalResults.toLocaleString() }})
         </span>
       </h1>

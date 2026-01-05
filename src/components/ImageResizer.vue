@@ -1,16 +1,16 @@
 <template>
   <div 
-    class="image-resizer-container" 
+    class="image-resizer-container bg-gray-100 dark:bg-gray-800" 
     :style="containerStyle"
     ref="containerRef"
   >
     <!-- Loading skeleton -->
-    <div v-if="loading" class="image-skeleton" :style="skeletonStyle">
+    <div v-if="loading" class="image-skeleton bg-gray-200 dark:bg-gray-700" :style="skeletonStyle">
       <div class="skeleton-content"></div>
     </div>
     
     <!-- Error/No image state -->
-    <div v-if="error" class="image-error" :style="errorStyle">
+    <div v-if="error" class="image-error bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400" :style="errorStyle">
       <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
       </svg>
@@ -66,7 +66,7 @@ const containerStyle = computed((): CSSProperties => {
   const style: CSSProperties = {
     position: 'relative',
     width: typeof props.width === 'number' ? `${props.width}px` : props.width,
-    backgroundColor: props.backgroundColor,
+    // backgroundColor handled by Tailwind classes
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -132,7 +132,6 @@ const skeletonStyle = computed((): CSSProperties => ({
   left: '0',
   width: '100%',
   height: '100%',
-  backgroundColor: '#374151', // gray-700
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -145,12 +144,10 @@ const errorStyle = computed((): CSSProperties => ({
   left: '0',
   width: '100%',
   height: '100%',
-  backgroundColor: props.backgroundColor,
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  color: '#6b7280', // gray-500
 }));
 
 // Update image URL when src changes
@@ -246,12 +243,21 @@ onUnmounted(() => {
   height: 100%;
   background: linear-gradient(
     90deg,
-    #374151 25%,
-    #4b5563 50%,
-    #374151 75%
+    rgb(229 231 235) 25%, /* gray-200 */
+    rgb(209 213 219) 50%, /* gray-300 */
+    rgb(229 231 235) 75% /* gray-200 */
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
+}
+
+.dark .skeleton-content {
+  background: linear-gradient(
+    90deg,
+    rgb(55 65 81) 25%, /* gray-700 */
+    rgb(75 85 99) 50%, /* gray-600 */
+    rgb(55 65 81) 75% /* gray-700 */
+  );
 }
 
 @keyframes pulse {
@@ -280,7 +286,6 @@ onUnmounted(() => {
 
 .error-text {
   font-size: 0.875rem;
-  color: #6b7280;
 }
 </style>
 

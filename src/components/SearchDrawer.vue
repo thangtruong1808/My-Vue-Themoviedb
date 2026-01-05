@@ -12,16 +12,16 @@
   <Transition name="drawer">
     <div
       v-if="isOpen"
-      class="fixed left-0 top-0 h-full w-full md:w-96 bg-gray-800 z-50 shadow-2xl flex flex-col overflow-y-auto"
+      class="fixed left-0 top-0 h-full w-full md:w-96 bg-white dark:bg-gray-800 z-50 shadow-2xl flex flex-col overflow-y-auto border-r border-gray-200 dark:border-gray-700"
       @click.stop
     >
       <div class="p-4">
         <!-- Header -->
         <div class="flex justify-between items-center mb-3">
-          <h2 class="text-xl font-bold text-white">Search & Filter</h2>
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white">Search & Filter</h2>
           <button
             @click="closeDrawer"
-            class="text-gray-400 hover:text-white transition-colors"
+            class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
             aria-label="Close drawer"
           >
             <svg
@@ -42,7 +42,7 @@
 
         <!-- Type Selector -->
         <div class="mb-4">
-          <label class="block text-xs font-medium text-gray-300 mb-2">
+          <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
             Search Type
           </label>
           <div class="flex gap-4">
@@ -52,9 +52,9 @@
                 value="movie"
                 v-model="selectedType"
                 @change="handleTypeChange"
-                class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500"
+                class="w-4 h-4 text-blue-600 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-blue-500"
               />
-              <span class="ml-2 text-sm text-gray-300">Movies</span>
+              <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Movies</span>
             </label>
             <label class="flex items-center cursor-pointer">
               <input
@@ -62,35 +62,35 @@
                 value="tv"
                 v-model="selectedType"
                 @change="handleTypeChange"
-                class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500"
+                class="w-4 h-4 text-blue-600 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-blue-500"
               />
-              <span class="ml-2 text-sm text-gray-300">TV Shows</span>
+              <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">TV Shows</span>
             </label>
           </div>
         </div>
 
         <!-- Text Search -->
         <div class="mb-3">
-          <label class="block text-xs font-medium text-gray-300 mb-1">
+          <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
             Search {{ selectedType === 'tv' ? 'TV Shows' : 'Movies' }}
           </label>
           <input
             v-model="localFilters.query"
             type="text"
             :placeholder="`Enter ${selectedType === 'tv' ? 'TV show' : 'movie'} title...`"
-            class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full p-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             @input="debouncedApplyFilters"
           />
         </div>
 
         <!-- Genres -->
         <div class="mb-3">
-          <label class="block text-xs font-medium text-gray-300 mb-1.5">
+          <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
             Genres
           </label>
           <div
             v-if="genresLoading"
-            class="text-gray-400 text-xs"
+            class="text-gray-600 dark:text-gray-400 text-xs"
           >
             Loading genres...
           </div>
@@ -101,23 +101,23 @@
             <label
               v-for="genre in genres"
               :key="genre.id"
-              class="flex items-center cursor-pointer hover:bg-gray-700 p-1 rounded transition-colors"
+              class="flex items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded transition-colors"
             >
               <input
                 type="checkbox"
                 :value="genre.id"
                 v-model="localFilters.genres"
-                class="w-3 h-3 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
+                class="w-3 h-3 text-blue-600 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
                 @change="debouncedApplyFilters"
               />
-              <span class="ml-1.5 text-xs text-gray-300">{{ genre.name }}</span>
+              <span class="ml-1.5 text-xs text-gray-700 dark:text-gray-300">{{ genre.name }}</span>
             </label>
           </div>
         </div>
 
         <!-- Year (Movies) -->
         <div class="mb-3" v-if="selectedType === 'movie'">
-          <label class="block text-xs font-medium text-gray-300 mb-1">
+          <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
             Release Year
           </label>
           <input
@@ -126,14 +126,14 @@
             min="1900"
             :max="currentYear"
             placeholder="e.g. 2020"
-            class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full p-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             @input="debouncedApplyFilters"
           />
         </div>
         
         <!-- First Air Date Year (TV Shows) -->
         <div class="mb-3" v-if="selectedType === 'tv'">
-          <label class="block text-xs font-medium text-gray-300 mb-1">
+          <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
             First Air Date Year
           </label>
           <input
@@ -142,14 +142,14 @@
             min="1900"
             :max="currentYear"
             placeholder="e.g. 2020"
-            class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full p-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             @input="debouncedApplyFilters"
           />
         </div>
 
         <!-- Minimum Rating -->
         <div class="mb-3">
-          <label class="block text-xs font-medium text-gray-300 mb-1">
+          <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
             Minimum Rating: {{ localFilters.vote_average_gte || 0 }}/10
           </label>
           <input
@@ -158,10 +158,10 @@
             min="0"
             max="10"
             step="0.5"
-            class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+            class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
             @input="debouncedApplyFilters"
           />
-          <div class="flex justify-between text-xs text-gray-400 mt-0.5">
+          <div class="flex justify-between text-xs text-gray-600 dark:text-gray-400 mt-0.5">
             <span>0</span>
             <span>10</span>
           </div>
@@ -169,12 +169,12 @@
 
         <!-- Language -->
         <div class="mb-3">
-          <label class="block text-xs font-medium text-gray-300 mb-1">
+          <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
             Language
           </label>
           <select
             v-model="localFilters.language"
-            class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full p-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             @change="debouncedApplyFilters"
           >
             <option value="">All Languages</option>
@@ -194,12 +194,12 @@
 
         <!-- Runtime -->
         <div class="mb-3">
-          <label class="block text-xs font-medium text-gray-300 mb-1">
+          <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
             Runtime
           </label>
           <select
             v-model="selectedRuntime"
-            class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full p-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             @change="debouncedApplyFilters"
           >
             <option value="">Any Runtime</option>
@@ -213,29 +213,29 @@
 
         <!-- Release Date Range (Movies) -->
         <div class="mb-3" v-if="selectedType === 'movie'">
-          <label class="block text-xs font-medium text-gray-300 mb-1">
+          <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
             Release Date Range
           </label>
           <div class="space-y-2">
             <div>
-              <label class="block text-xs text-gray-400 mb-1">From Date</label>
+              <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">From Date</label>
               <input
                 v-model="localFilters.release_date_from"
                 type="date"
-                class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full p-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 @input="debouncedApplyFilters"
               />
             </div>
             <div>
-              <label class="block text-xs text-gray-400 mb-1">To Date</label>
+              <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">To Date</label>
               <input
                 v-model="localFilters.release_date_to"
                 type="date"
-                class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full p-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 @input="validateDates"
               />
             </div>
-            <div v-if="dateError" class="text-xs text-red-400 mt-1">
+            <div v-if="dateError" class="text-xs text-red-500 dark:text-red-400 mt-1">
               {{ dateError }}
             </div>
           </div>
@@ -243,29 +243,29 @@
         
         <!-- First Air Date Range (TV Shows) -->
         <div class="mb-3" v-if="selectedType === 'tv'">
-          <label class="block text-xs font-medium text-gray-300 mb-1">
+          <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
             First Air Date Range
           </label>
           <div class="space-y-2">
             <div>
-              <label class="block text-xs text-gray-400 mb-1">From Date</label>
+              <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">From Date</label>
               <input
                 v-model="localFilters.first_air_date_from"
                 type="date"
-                class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full p-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 @input="debouncedApplyFilters"
               />
             </div>
             <div>
-              <label class="block text-xs text-gray-400 mb-1">To Date</label>
+              <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">To Date</label>
               <input
                 v-model="localFilters.first_air_date_to"
                 type="date"
-                class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full p-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 @input="validateDates"
               />
             </div>
-            <div v-if="dateError" class="text-xs text-red-400 mt-1">
+            <div v-if="dateError" class="text-xs text-red-500 dark:text-red-400 mt-1">
               {{ dateError }}
             </div>
           </div>
@@ -274,7 +274,7 @@
         <!-- Clear Filters Button -->
         <button
           @click="clearFilters"
-          class="w-full py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium text-sm"
+          class="w-full py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium text-sm"
         >
           Clear All Filters
         </button>

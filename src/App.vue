@@ -1,19 +1,19 @@
 <template>
   <div id="app">
     <router-view v-if="!shouldShowFilteredResults || isDetailsPage" />
-    <div v-else-if="shouldShowFilteredResults" class="min-h-screen bg-gray-900 text-white pb-32">
+    <div v-else-if="shouldShowFilteredResults" class="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white pb-32">
       <Navbar />
       <div class="container mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-8">
           <h1 class="text-3xl font-bold">
             Filtered {{ selectedType === 'tv' ? 'TV Shows' : 'Movies' }}
-            <span v-if="filteredTotalResults > 0" class="text-xl font-normal text-gray-400 ml-2">
+            <span v-if="filteredTotalResults > 0" class="text-xl font-normal text-gray-600 dark:text-gray-400 ml-2">
               ({{ filteredTotalResults.toLocaleString() }})
             </span>
           </h1>
           <button
             @click="clearFilters"
-            class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+            class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
           >
             Clear Filters
           </button>
@@ -80,7 +80,7 @@ const shouldShowFilteredResults = computed(() => {
   return hasActiveFilters.value && !isDetailsPage.value;
 });
 
-// Initialize from URL on mount
+// Initialize URL on mount (theme is initialized in main.ts before app mounts)
 onMounted(() => {
   initializeFromURL();
 });
