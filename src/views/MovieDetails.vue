@@ -77,12 +77,12 @@
     </div>
 
     <!-- Back Button -->
-    <div class="container mx-auto px-4 pt-6">
+    <div class="container mx-auto px-4 pt-6 ">
       <button
         @click="goBack"
-        class="back-button flex items-center text-gray-300 hover:text-white transition-colors mb-6"
+        class="back-button flex items-center text-gray-300 hover:text-white transition-colors mb-6 hover:bg-transparent border-2 border-transparent hover:border-blue-500 rounded-lg px-3 py-2"
       >
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5 mr-2 " fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
         <span>Back</span>
@@ -90,60 +90,174 @@
     </div>
 
     <!-- Main Content -->
-    <div v-if="movieDetails" class="container mx-auto px-4 max-w-7xl">
+    <div v-if="movieDetails" class="container mx-auto px-4 w-full">
       <div class="flex flex-col lg:flex-row gap-8">
         <!-- Left Column - Main Content -->
-        <div class="flex-1 min-w-0">
+        <div class="flex-1 min-w-0 flex flex-col">
           <!-- Overview -->
-          <div v-if="movieDetails.overview" class="mb-8">
+          <div v-if="movieDetails.overview" class="mb-8 order-1">
             <h2 class="text-2xl font-bold mb-3">Overview</h2>
             <p class="text-gray-300 leading-relaxed break-words">{{ movieDetails.overview }}</p>
           </div>
 
-          <!-- Top Billed Cast -->
-          <div v-if="cast.length > 0" class="mb-8">
-            <div class="flex items-center justify-between mb-4">
-              <h2 class="text-2xl font-bold">Top Billed Cast</h2>
+          <!-- Facts Section (Mobile/Tablet - shown above Top Billed Cast) -->
+          <div class="mb-8 lg:hidden order-2">
+            <!-- Mobile Poster -->
+            <div class="md:hidden mb-6">
+              <MoviePoster
+                :poster-path="movieDetails.poster_path"
+                :alt="movieDetails.title"
+                size="w500"
+                object-fit="contain"
+                container-class="w-full rounded-lg"
+                image-class="rounded-lg"
+              />
             </div>
-            <div class="w-full overflow-x-auto pb-4 carousel-container">
-              <div class="flex gap-4" style="width: max-content;">
-                <div
-                  v-for="actor in cast.slice(0, 10)"
-                  :key="actor.id"
-                  class="flex-shrink-0 w-36 cursor-pointer group"
-                  @click="goToPerson(actor.id)"
-                >
-                  <div class="mb-2">
-                    <img
-                      v-if="actor.profile_path"
-                      :src="`https://image.tmdb.org/t/p/w185${actor.profile_path}`"
-                      :alt="actor.name"
-                      class="w-full aspect-[2/3] object-cover rounded-lg border-2 border-gray-700 group-hover:border-blue-500 transition-colors"
-                      @error="handleImageError"
-                    />
-                    <div
-                      v-else
-                      class="w-full aspect-[2/3] bg-gray-700 rounded-lg flex items-center justify-center"
-                    >
-                      <svg class="w-16 h-16 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div class="font-semibold text-sm">{{ actor.name }}</div>
-                  <div class="text-xs text-gray-400 mt-1">{{ actor.character }}</div>
+
+            <!-- Facts -->
+            <div class="grid grid-cols-2 gap-6">
+              <div v-if="movieDetails.status">
+                <h3 class="font-semibold mb-2">Status</h3>
+                <p class="text-gray-300">{{ movieDetails.status }}</p>
+              </div>
+
+              <div v-if="movieDetails.original_language">
+                <h3 class="font-semibold mb-2">Original Language</h3>
+                <p class="text-gray-300">{{ movieDetails.original_language.toUpperCase() }}</p>
+              </div>
+
+              <div v-if="movieDetails.budget">
+                <h3 class="font-semibold mb-2">Budget</h3>
+                <p class="text-gray-300">${{ formatCurrency(movieDetails.budget) }}</p>
+              </div>
+
+              <div v-if="movieDetails.revenue">
+                <h3 class="font-semibold mb-2">Revenue</h3>
+                <p class="text-gray-300">${{ formatCurrency(movieDetails.revenue) }}</p>
+              </div>
+
+              <div v-if="movieDetails.keywords?.keywords && movieDetails.keywords.keywords.length > 0" class="col-span-2">
+                <h3 class="font-semibold mb-2">Keywords</h3>
+                <div class="flex flex-wrap gap-2">
+                  <span
+                    v-for="keyword in movieDetails.keywords.keywords"
+                    :key="keyword.id"
+                    class="px-2 py-1 bg-gray-800 rounded text-sm text-gray-300 hover:bg-gray-700 cursor-pointer"
+                  >
+                    {{ keyword.name }}
+                  </span>
                 </div>
               </div>
             </div>
+
+            <!-- Genres -->
+            <div v-if="movieDetails.genres && movieDetails.genres.length > 0" class="mt-6">
+              <h3 class="font-semibold mb-2">Genres</h3>
+              <div class="flex flex-wrap gap-2">
+                <span
+                  v-for="genre in movieDetails.genres"
+                  :key="genre.id"
+                  class="px-2 py-1 bg-gray-800 rounded text-sm text-gray-300"
+                >
+                  {{ genre.name }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Production Companies -->
+            <div v-if="movieDetails.production_companies && movieDetails.production_companies.length > 0" class="mt-6">
+              <h3 class="font-semibold mb-2">Production Companies</h3>
+              <div class="flex flex-wrap gap-2">
+                <span
+                  v-for="company in movieDetails.production_companies"
+                  :key="company.id"
+                  class="px-2 py-1 bg-gray-800 rounded text-sm text-gray-300"
+                >
+                  {{ company.name }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Billed Cast -->
+          <div v-if="cast.length > 0" class="mb-8 order-3">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-2xl font-bold">Top Billed Cast</h2>
+            </div>
+            <div class="relative">
+              <div 
+                ref="castCarouselContainer"
+                class="w-full overflow-hidden pb-4 carousel-container"
+              >
+                <div 
+                  ref="castCarousel"
+                  class="flex gap-4 transition-transform duration-300 ease-in-out"
+                  :style="{ transform: `translateX(-${castScrollPosition}px)` }"
+                >
+                  <div
+                    v-for="actor in (showAllCast ? cast : cast.slice(0, 10))"
+                    :key="actor.id"
+                    class="flex-shrink-0 w-36 cursor-pointer group"
+                    @click="goToPerson(actor.id)"
+                  >
+                    <div class="mb-2">
+                      <img
+                        v-if="actor.profile_path"
+                        :src="`https://image.tmdb.org/t/p/w185${actor.profile_path}`"
+                        :alt="actor.name"
+                        class="w-full aspect-[2/3] object-cover rounded-lg border-2 border-gray-700 group-hover:border-blue-500 transition-colors"
+                        @error="handleImageError"
+                      />
+                      <div
+                        v-else
+                        class="w-full aspect-[2/3] bg-gray-700 rounded-lg flex items-center justify-center"
+                      >
+                        <svg class="w-16 h-16 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="font-semibold text-sm">{{ actor.name }}</div>
+                    <div class="text-xs text-gray-400 mt-1">{{ actor.character }}</div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Navigation Buttons -->
+              <button
+                v-if="canScrollCastLeft"
+                @click="scrollCastLeft"
+                class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-gray-800/90 hover:bg-gray-700 text-white rounded-full p-2 shadow-lg transition-all"
+                aria-label="Previous cast"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              
+              <button
+                v-if="canScrollCastRight"
+                @click="scrollCastRight"
+                class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-gray-800/90 hover:bg-gray-700 text-white rounded-full p-2 shadow-lg transition-all"
+                aria-label="Next cast"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
             <div v-if="cast.length > 10" class="mt-4">
-              <button class="text-blue-400 hover:text-blue-300 font-semibold">
-                View More
+              <button 
+                @click="toggleCastDisplay"
+                class="text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+              >
+                {{ showAllCast ? 'Show Less' : `View More (${cast.length - 10} more)` }}
               </button>
             </div>
           </div>
 
           <!-- Media Section -->
-          <div class="mb-8">
+          <div class="mb-8 order-4">
             <div class="flex items-center gap-4 mb-4 border-b border-gray-700">
               <h2 class="text-2xl font-bold pb-4">Media</h2>
               <div class="flex gap-1 pb-4 -mb-px">
@@ -235,55 +349,75 @@
           </div>
 
           <!-- Recommendations Section -->
-          <div v-if="recommendations.length > 0" class="mb-8">
+          <div v-if="recommendations.length > 0" class="mb-8 order-5">
             <h2 class="text-2xl font-bold mb-4">Recommendations</h2>
-            <div class="w-full overflow-x-auto pb-4 carousel-container">
-              <div class="flex gap-4" style="width: max-content;">
-                <div
-                  v-for="movie in recommendations.slice(0, 20)"
-                  :key="movie.id"
-                  class="flex-shrink-0 w-40 cursor-pointer group"
-                  @click="goToMovie(movie.id)"
+            <div class="relative">
+              <div 
+                ref="recommendationsCarouselContainer"
+                class="w-full overflow-hidden pb-4 carousel-container"
+              >
+                <div 
+                  ref="recommendationsCarousel"
+                  class="flex gap-4 transition-transform duration-300 ease-in-out"
+                  :style="{ transform: `translateX(-${recommendationsScrollPosition}px)` }"
                 >
-                  <div class="mb-2">
-                    <img
-                      v-if="movie.poster_path"
-                      :src="`https://image.tmdb.org/t/p/w185${movie.poster_path}`"
-                      :alt="movie.title"
-                      class="w-full aspect-[2/3] object-cover rounded-lg border-2 border-gray-700 group-hover:border-blue-500 transition-colors"
-                      @error="handleImageError"
-                    />
-                    <div
-                      v-else
-                      class="w-full aspect-[2/3] bg-gray-800 rounded-lg flex items-center justify-center"
-                    >
-                      <svg class="w-12 h-12 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
-                      </svg>
+                  <div
+                    v-for="movie in recommendations.slice(0, 20)"
+                    :key="movie.id"
+                    class="flex-shrink-0 w-40 cursor-pointer group"
+                    @click="goToMovie(movie.id)"
+                  >
+                    <div class="mb-2">
+                      <img
+                        v-if="movie.poster_path"
+                        :src="`https://image.tmdb.org/t/p/w185${movie.poster_path}`"
+                        :alt="movie.title"
+                        class="w-full aspect-[2/3] object-cover rounded-lg border-2 border-gray-700 group-hover:border-blue-500 transition-colors"
+                        @error="handleImageError"
+                      />
+                      <div
+                        v-else
+                        class="w-full aspect-[2/3] bg-gray-800 rounded-lg flex items-center justify-center"
+                      >
+                        <svg class="w-12 h-12 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                        </svg>
+                      </div>
                     </div>
+                    <div class="font-semibold text-sm mb-1 line-clamp-2">{{ movie.title }}</div>
+                    <div class="text-xs text-gray-400">{{ movie.release_date ? new Date(movie.release_date).getFullYear() : '—' }}</div>
                   </div>
-                  <div class="font-semibold text-sm mb-1 line-clamp-2">{{ movie.title }}</div>
-                  <div class="text-xs text-gray-400">{{ movie.release_date ? new Date(movie.release_date).getFullYear() : '—' }}</div>
                 </div>
               </div>
+              
+              <!-- Navigation Buttons -->
+              <button
+                v-if="canScrollRecommendationsLeft"
+                @click="scrollRecommendationsLeft"
+                class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-gray-800/90 hover:bg-gray-700 text-white rounded-full p-2 shadow-lg transition-all"
+                aria-label="Previous recommendations"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              
+              <button
+                v-if="canScrollRecommendationsRight"
+                @click="scrollRecommendationsRight"
+                class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-gray-800/90 hover:bg-gray-700 text-white rounded-full p-2 shadow-lg transition-all"
+                aria-label="Next recommendations"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Right Column - Sidebar -->
-        <div class="w-full lg:w-80 flex-shrink-0">
-          <!-- Mobile Poster -->
-          <div class="md:hidden mb-6">
-            <MoviePoster
-              :poster-path="movieDetails.poster_path"
-              :alt="movieDetails.title"
-              size="w500"
-              object-fit="contain"
-              container-class="w-full rounded-lg"
-              image-class="rounded-lg"
-            />
-          </div>
-
+        <!-- Right Column - Sidebar (Desktop only) -->
+        <div class="w-full lg:w-80 flex-shrink-0 hidden lg:block">
           <!-- Facts -->
           <div class="space-y-6">
             <div v-if="movieDetails.status">
@@ -317,6 +451,34 @@
                   {{ keyword.name }}
                 </span>
               </div>
+            </div>
+          </div>
+
+          <!-- Genres -->
+          <div v-if="movieDetails.genres && movieDetails.genres.length > 0" class="mt-6">
+            <h3 class="font-semibold mb-2">Genres</h3>
+            <div class="flex flex-wrap gap-2">
+              <span
+                v-for="genre in movieDetails.genres"
+                :key="genre.id"
+                class="px-2 py-1 bg-gray-800 rounded text-sm text-gray-300"
+              >
+                {{ genre.name }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Production Companies -->
+          <div v-if="movieDetails.production_companies && movieDetails.production_companies.length > 0" class="mt-6">
+            <h3 class="font-semibold mb-2">Production Companies</h3>
+            <div class="flex flex-wrap gap-2">
+              <span
+                v-for="company in movieDetails.production_companies"
+                :key="company.id"
+                class="px-2 py-1 bg-gray-800 rounded text-sm text-gray-300"
+              >
+                {{ company.name }}
+              </span>
             </div>
           </div>
         </div>
@@ -401,6 +563,19 @@ const showImageModal = ref(false);
 const currentVideoKey = ref('');
 const currentImageUrl = ref('');
 
+// Cast carousel state
+const castCarousel = ref<HTMLElement | null>(null);
+const castCarouselContainer = ref<HTMLElement | null>(null);
+const castScrollPosition = ref(0);
+
+// Recommendations carousel state
+const recommendationsCarousel = ref<HTMLElement | null>(null);
+const recommendationsCarouselContainer = ref<HTMLElement | null>(null);
+const recommendationsScrollPosition = ref(0);
+
+// Cast display state
+const showAllCast = ref(false);
+
 const goBack = () => {
   router.back();
 };
@@ -435,6 +610,54 @@ const backdropUrl = computed(() => {
 const cast = computed(() => {
   return movieCredits.value?.cast || [];
 });
+
+// Cast carousel navigation
+const canScrollCastLeft = computed(() => castScrollPosition.value > 0);
+const canScrollCastRight = computed(() => {
+  if (!castCarousel.value || !castCarouselContainer.value) return false;
+  const maxScroll = castCarousel.value.scrollWidth - castCarouselContainer.value.clientWidth;
+  return castScrollPosition.value < maxScroll;
+});
+
+const scrollCastLeft = () => {
+  if (!castCarouselContainer.value) return;
+  const scrollAmount = castCarouselContainer.value.clientWidth;
+  castScrollPosition.value = Math.max(0, castScrollPosition.value - scrollAmount);
+};
+
+const scrollCastRight = () => {
+  if (!castCarousel.value || !castCarouselContainer.value) return;
+  const scrollAmount = castCarouselContainer.value.clientWidth;
+  const maxScroll = castCarousel.value.scrollWidth - castCarouselContainer.value.clientWidth;
+  castScrollPosition.value = Math.min(maxScroll, castScrollPosition.value + scrollAmount);
+};
+
+// Toggle cast display and reset scroll position
+const toggleCastDisplay = () => {
+  showAllCast.value = !showAllCast.value;
+  castScrollPosition.value = 0; // Reset scroll position when toggling
+};
+
+// Recommendations carousel navigation
+const canScrollRecommendationsLeft = computed(() => recommendationsScrollPosition.value > 0);
+const canScrollRecommendationsRight = computed(() => {
+  if (!recommendationsCarousel.value || !recommendationsCarouselContainer.value) return false;
+  const maxScroll = recommendationsCarousel.value.scrollWidth - recommendationsCarouselContainer.value.clientWidth;
+  return recommendationsScrollPosition.value < maxScroll;
+});
+
+const scrollRecommendationsLeft = () => {
+  if (!recommendationsCarouselContainer.value) return;
+  const scrollAmount = recommendationsCarouselContainer.value.clientWidth;
+  recommendationsScrollPosition.value = Math.max(0, recommendationsScrollPosition.value - scrollAmount);
+};
+
+const scrollRecommendationsRight = () => {
+  if (!recommendationsCarousel.value || !recommendationsCarouselContainer.value) return;
+  const scrollAmount = recommendationsCarouselContainer.value.clientWidth;
+  const maxScroll = recommendationsCarousel.value.scrollWidth - recommendationsCarouselContainer.value.clientWidth;
+  recommendationsScrollPosition.value = Math.min(maxScroll, recommendationsScrollPosition.value + scrollAmount);
+};
 
 // Get videos
 const videos = computed(() => {
@@ -546,18 +769,37 @@ watch(
       activeMediaTab.value = 'videos';
       showVideoModal.value = false;
       showImageModal.value = false;
+      castScrollPosition.value = 0; // Reset carousel position
+      recommendationsScrollPosition.value = 0; // Reset recommendations carousel position
+      showAllCast.value = false; // Reset cast display
     }
   }
 );
+
+// Reset carousel position when cast changes
+watch(cast, () => {
+  castScrollPosition.value = 0;
+});
+
+// Reset scroll position when showAllCast changes
+watch(showAllCast, () => {
+  castScrollPosition.value = 0;
+});
+
+// Reset recommendations carousel position when recommendations change
+watch(recommendations, () => {
+  recommendationsScrollPosition.value = 0;
+});
 </script>
 
 <style scoped>
 .back-button {
   background-color: transparent !important;
-  border: none !important;
-  padding: 0 !important;
   font-weight: normal !important;
-  border-radius: 0 !important;
+}
+
+.back-button:hover {
+  border-color: #3b82f6 !important; /* blue-500 */
 }
 
 /* Custom scrollbar for carousel */

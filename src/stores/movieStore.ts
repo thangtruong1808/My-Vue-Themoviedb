@@ -25,6 +25,16 @@ interface Movie {
   overview: string;
   genres: { id: number; name: string }[];
   video?: boolean;
+  status?: string;
+  original_language?: string;
+  budget?: number;
+  revenue?: number;
+  runtime?: number;
+  backdrop_path?: string;
+  keywords?: {
+    keywords: { id: number; name: string }[];
+  };
+  production_companies?: { id: number; name: string }[];
 }
 
 interface Genre {
