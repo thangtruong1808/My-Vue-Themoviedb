@@ -10,6 +10,10 @@ import {
   getUpcomingMovies,
   getMovieGenres,
   getConfiguration,
+  getMovieCredits,
+  getMovieImages,
+  getMovieVideos,
+  getMovieRecommendations,
 } from "../services/MovieService";
 
 interface Movie {
@@ -46,6 +50,10 @@ export const useMovieStore = defineStore("movie", () => {
   const searchQuery = ref("");
   const searchResults = ref<Movie[]>([]);
   const movieDetails = ref<Movie | null>(null);
+  const movieCredits = ref<any>(null);
+  const movieImages = ref<any>(null);
+  const movieVideos = ref<any[]>([]);
+  const movieRecommendations = ref<Movie[]>([]);
   const genres = ref<Genre[]>([]);
   const configuration = ref<any>(null);
   // Pagination state
@@ -345,12 +353,56 @@ export const useMovieStore = defineStore("movie", () => {
       // Set loading and clear details BEFORE fetching to show loading state
       loading.value = true;
       movieDetails.value = null;
+      movieCredits.value = null;
+      movieImages.value = null;
+      movieVideos.value = [];
+      movieRecommendations.value = [];
     }
     await fetchWithCache(
       cacheKey,
       () => getMovie(id),
       (data) => (movieDetails.value = data)
     );
+    
+    // Fetch credits and images in parallel
+    const creditsCacheKey = `movie:${id}:credits`;
+    const imagesCacheKey = `movie:${id}:images`;
+    
+    await fetchWithCache(
+      creditsCacheKey,
+      () => getMovieCredits(id),
+      (data) => (movieCredits.value = data)
+    ).catch((err) => {
+      console.error("Failed to fetch movie credits:", err);
+    });
+    
+    await fetchWithCache(
+      imagesCacheKey,
+      () => getMovieImages(id),
+      (data) => (movieImages.value = data)
+    ).catch((err) => {
+      console.error("Failed to fetch movie images:", err);
+    });
+    
+    // Fetch videos
+    const videosCacheKey = `movie:${id}:videos`;
+    await fetchWithCache(
+      videosCacheKey,
+      () => getMovieVideos(id),
+      (data) => (movieVideos.value = data)
+    ).catch((err) => {
+      console.error("Failed to fetch movie videos:", err);
+    });
+    
+    // Fetch recommendations
+    const recommendationsCacheKey = `movie:${id}:recommendations`;
+    await fetchWithCache(
+      recommendationsCacheKey,
+      () => getMovieRecommendations(id, 1),
+      (data) => (movieRecommendations.value = data.results || [])
+    ).catch((err) => {
+      console.error("Failed to fetch movie recommendations:", err);
+    });
   };
 
   const fetchGenres = async () => {
@@ -569,6 +621,10 @@ export const useMovieStore = defineStore("movie", () => {
     searchQuery,
     searchResults,
     movieDetails,
+    movieCredits,
+    movieImages,
+    movieVideos,
+    movieRecommendations,
     genres,
     configuration,
     currentPage,

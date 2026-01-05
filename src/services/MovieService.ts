@@ -238,6 +238,20 @@ export const getTrendingMovies = async (timeWindow: string = "day") => {
   return data.results || [];
 };
 
+export const getMovieRecommendations = async (id: string, page: number = 1) => {
+  const response = await fetchWithTimeout(
+    `${API_URL}/movie/${id}/recommendations?page=${page}`,
+    options
+  );
+  const data = await handleResponse(response);
+  return {
+    results: data.results || [],
+    page: data.page || page,
+    totalPages: data.total_pages || 1,
+    totalResults: data.total_results || 0,
+  };
+};
+
 export const getConfiguration = async () => {
   const response = await fetchWithTimeout(
     `${API_URL}/configuration`,

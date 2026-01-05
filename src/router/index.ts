@@ -9,6 +9,7 @@ import OnTheAir from "../views/OnTheAir.vue";
 import TopRatedTV from "../views/TopRatedTV.vue";
 import SearchTV from "../views/SearchTV.vue";
 import TVDetails from "../views/TVDetails.vue";
+import PersonDetails from "../views/PersonDetails.vue";
 
 const routes = [
   {
@@ -61,6 +62,12 @@ const routes = [
     path: "/tv/:id",
     name: "TVDetails",
     component: TVDetails,
+    props: true,
+  },
+  {
+    path: "/person/:id",
+    name: "PersonDetails",
+    component: PersonDetails,
     props: true,
   },
 ];
