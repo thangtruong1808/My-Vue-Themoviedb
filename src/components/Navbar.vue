@@ -17,14 +17,8 @@
         >
         <router-link to="/top-rated" class="nav-link"
           >Top Rated</router-link
-        >
-        <button 
-          @click="toggleSearchDrawer" 
-          :class="['nav-link', { 'nav-link-active': searchDrawerOpen }]"
-        >
-          Search Movies
-        </button>
-        <span class="text-gray-500 mx-2 font-bold">|</span>
+        >        
+        <span class="text-gray-500 font-bold">|</span>
         <router-link to="/tv" class="nav-link"
           >Popular TV</router-link
         >
@@ -34,12 +28,16 @@
         <router-link to="/tv/top-rated" class="nav-link"
           >Top Rated TV</router-link
         >
-        <button 
-          @click="toggleTVSearchDrawer" 
-          :class="['nav-link', { 'nav-link-active': tvSearchDrawerOpen }]"
-        >
-          Search TV
-        </button>
+         <span class="text-gray-500 font-bold">|</span>
+         <button 
+           @click="toggleSearchDrawer" 
+           :class="['nav-link', { 'nav-link-active': searchDrawerOpen }]"
+         >
+           <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+           </svg>
+           Search
+         </button>
       </div>
       <div class="md:hidden">
         <button @click="toggleMenu" class="text-white">
@@ -82,6 +80,9 @@
         @click="handleMobileSearchClick"
         :class="['nav-link-mobile', 'w-full', 'text-left', { 'nav-link-active': searchDrawerOpen }]"
       >
+        <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
         Search
       </button>
       <div class="border-t border-gray-700 my-2"></div>
@@ -103,31 +104,20 @@
         class="nav-link-mobile"
         >Top Rated TV</router-link
       >
-      <button
-        @click="handleMobileTVSearchClick"
-        :class="['nav-link-mobile', 'w-full', 'text-left', { 'nav-link-active': tvSearchDrawerOpen }]"
-      >
-        Search TV
-      </button>
     </div>
-    <SearchDrawer type="movie" />
-    <SearchDrawer type="tv" />
+    <SearchDrawer />
   </nav>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
-import { useMovieStore } from "../stores/movieStore";
-import { useTVStore } from "../stores/tvStore";
+import { useSearchStore } from "../stores/searchStore";
 import SearchDrawer from "./SearchDrawer.vue";
 
-const movieStore = useMovieStore();
-const tvStore = useTVStore();
-const { searchDrawerOpen, hasActiveFilters } = storeToRefs(movieStore);
-const { searchDrawerOpen: tvSearchDrawerOpen, hasActiveFilters: tvHasActiveFilters } = storeToRefs(tvStore);
-const { toggleSearchDrawer, clearFilters } = movieStore;
-const { toggleSearchDrawer: toggleTVSearchDrawer, clearFilters: clearTVFilters } = tvStore;
+const searchStore = useSearchStore();
+const { searchDrawerOpen, hasActiveFilters } = storeToRefs(searchStore);
+const { toggleSearchDrawer, clearFilters } = searchStore;
 
 const menuOpen = ref(false);
 
@@ -145,14 +135,6 @@ const handleLogoClick = () => {
   if (hasActiveFilters.value) {
     clearFilters();
   }
-  if (tvHasActiveFilters.value) {
-    clearTVFilters();
-  }
-};
-
-const handleMobileTVSearchClick = () => {
-  toggleMenu();
-  toggleTVSearchDrawer();
 };
 </script>
 
