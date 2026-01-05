@@ -2,58 +2,55 @@
   <div class="min-h-screen bg-gray-900 text-white pb-32">
     <Navbar />
     <div class="container mx-auto px-4 py-8">
-      <h1 class="text-3xl font-bold mb-8">Search TV Shows</h1>
-      <div class="mb-8">
-        <input
-          v-model="query"
-          @input="debouncedSearch"
-          type="text"
-          placeholder="Search for TV shows..."
-          class="w-full p-3 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+      <h1 class="text-3xl font-bold mb-8">
+        Search TV Shows
+        <span v-if="filteredTotalResults > 0" class="text-xl font-normal text-gray-400 ml-2">
+          ({{ filteredTotalResults.toLocaleString() }})
+        </span>
+      </h1>
       <TVList
-        :tv-shows="searchResults"
+        :tv-shows="displayedTVShows"
         :loading="loading"
         :error="error"
-        :loading-more="loadingMore"
-        :has-more="searchCurrentPage < searchTotalPages"
-        :on-load-more="loadMoreSearchTVShows"
+        :has-attempted-fetch="hasAttemptedFetch"
+        :loading-more="filteredLoadingMore"
+        :has-more="hasMore"
+        :on-load-more="handleLoadMore"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, onBeforeMount } from "vue";
 import { storeToRefs } from "pinia";
 import { useTVStore } from "../stores/tvStore";
 import Navbar from "../components/Navbar.vue";
 import TVList from "../components/TVList.vue";
 
 const store = useTVStore();
-const { searchResults, loading, loadingMore, error, searchCurrentPage, searchTotalPages } = storeToRefs(store);
-const { searchTVShowsAction, loadMoreSearchTVShows } = store;
-const query = ref("");
+const { filteredResults, loading, error, hasAttemptedFetch, filteredCurrentPage, filteredTotalPages, filteredLoadingMore, hasActiveFilters, filteredTotalResults } = storeToRefs(store);
+const { loadMoreFilteredTVShows } = store;
 
-let timeout: number | null = null;
+// Display filtered results if filters are active, otherwise show empty state
+const displayedTVShows = computed(() => {
+  return hasActiveFilters.value ? filteredResults.value : [];
+});
 
-const debouncedSearch = () => {
-  if (timeout) clearTimeout(timeout);
-  timeout = setTimeout(() => {
-    if (query.value.trim()) {
-      searchTVShowsAction(query.value);
-    }
-  }, 500);
+const hasMore = computed(() => {
+  return hasActiveFilters.value && filteredCurrentPage.value < filteredTotalPages.value;
+});
+
+const handleLoadMore = () => {
+  if (hasActiveFilters.value) {
+    loadMoreFilteredTVShows();
+  }
 };
 
-watch(
-  () => query.value,
-  (newQuery) => {
-    if (!newQuery.trim()) {
-      (store as any).searchResults.value = [];
-    }
+// Set hasAttemptedFetch to true so we don't show skeleton on initial load
+onBeforeMount(() => {
+  if (!hasAttemptedFetch.value) {
+    hasAttemptedFetch.value = true;
   }
-);
+});
 </script>
-

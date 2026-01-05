@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import {
   getPopularMovies,
   searchMovies,
@@ -69,6 +69,10 @@ export const useMovieStore = defineStore("movie", () => {
   // Pagination state
   const currentPage = ref(1);
   const totalPages = ref(1);
+  const totalResults = ref(0);
+  const nowPlayingTotalResults = ref(0);
+  const topRatedTotalResults = ref(0);
+  const searchTotalResults = ref(0);
   const loadingMore = ref(false);
   const currentListType = ref<"popular" | "nowPlaying" | "topRated" | "search" | null>(null);
   
@@ -88,6 +92,7 @@ export const useMovieStore = defineStore("movie", () => {
   const filteredResults = ref<Movie[]>([]);
   const filteredCurrentPage = ref(1);
   const filteredTotalPages = ref(1);
+  const filteredTotalResults = ref(0);
   const filteredLoadingMore = ref(false);
   const hasActiveFilters = ref(false);
 
@@ -190,6 +195,7 @@ export const useMovieStore = defineStore("movie", () => {
         movies.value = cachedData;
         loading.value = false;
         totalPages.value = getCachedData<number>("popular:totalPages") || 1;
+        totalResults.value = getCachedData<number>("popular:totalResults") || 0;
       } else {
         loading.value = true;
         movies.value = [];
@@ -208,8 +214,14 @@ export const useMovieStore = defineStore("movie", () => {
       }
       currentPage.value = response.page;
       totalPages.value = response.totalPages;
+      if (reset) {
+        totalResults.value = response.totalResults || 0;
+      }
       setCachedData(`popular:${response.page}`, response.results);
       setCachedData("popular:totalPages", response.totalPages);
+      if (reset) {
+        setCachedData("popular:totalResults", response.totalResults || 0);
+      }
     } catch (err: any) {
       error.value = err.message || "Failed to fetch movies";
       throw err;
@@ -228,6 +240,7 @@ export const useMovieStore = defineStore("movie", () => {
         movies.value = cachedData;
         loading.value = false;
         totalPages.value = getCachedData<number>("nowPlaying:totalPages") || 1;
+        nowPlayingTotalResults.value = getCachedData<number>("nowPlaying:totalResults") || 0;
       } else {
         loading.value = true;
         movies.value = [];
@@ -241,6 +254,7 @@ export const useMovieStore = defineStore("movie", () => {
       const response = await getNowPlayingMovies(currentPage.value);
       if (reset) {
         movies.value = response.results;
+        nowPlayingTotalResults.value = response.totalResults || 0;
       } else {
         movies.value = [...movies.value, ...response.results];
       }
@@ -248,6 +262,9 @@ export const useMovieStore = defineStore("movie", () => {
       totalPages.value = response.totalPages;
       setCachedData(`nowPlaying:${response.page}`, response.results);
       setCachedData("nowPlaying:totalPages", response.totalPages);
+      if (reset) {
+        setCachedData("nowPlaying:totalResults", response.totalResults || 0);
+      }
     } catch (err: any) {
       error.value = err.message || "Failed to fetch movies";
       throw err;
@@ -266,6 +283,7 @@ export const useMovieStore = defineStore("movie", () => {
         movies.value = cachedData;
         loading.value = false;
         totalPages.value = getCachedData<number>("topRated:totalPages") || 1;
+        topRatedTotalResults.value = getCachedData<number>("topRated:totalResults") || 0;
       } else {
         loading.value = true;
         movies.value = [];
@@ -279,6 +297,7 @@ export const useMovieStore = defineStore("movie", () => {
       const response = await getTopRatedMovies(currentPage.value);
       if (reset) {
         movies.value = response.results;
+        topRatedTotalResults.value = response.totalResults || 0;
       } else {
         movies.value = [...movies.value, ...response.results];
       }
@@ -286,6 +305,9 @@ export const useMovieStore = defineStore("movie", () => {
       totalPages.value = response.totalPages;
       setCachedData(`topRated:${response.page}`, response.results);
       setCachedData("topRated:totalPages", response.totalPages);
+      if (reset) {
+        setCachedData("topRated:totalResults", response.totalResults || 0);
+      }
     } catch (err: any) {
       error.value = err.message || "Failed to fetch movies";
       throw err;
@@ -324,6 +346,7 @@ export const useMovieStore = defineStore("movie", () => {
       searchResults.value = cachedData;
       loading.value = false;
       totalPages.value = getCachedData<number>(`search:${query.toLowerCase().trim()}:totalPages`) || 1;
+      searchTotalResults.value = getCachedData<number>(`search:${query.toLowerCase().trim()}:totalResults`) || 0;
       return;
     }
 
@@ -345,8 +368,14 @@ export const useMovieStore = defineStore("movie", () => {
       }
       currentPage.value = response.page;
       totalPages.value = response.totalPages;
+      if (reset) {
+        searchTotalResults.value = response.totalResults || 0;
+      }
       setCachedData(cacheKey, response.results);
       setCachedData(`search:${query.toLowerCase().trim()}:totalPages`, response.totalPages);
+      if (reset) {
+        setCachedData(`search:${query.toLowerCase().trim()}:totalResults`, response.totalResults || 0);
+      }
     } catch (err: any) {
       error.value = err.message || "Failed to search movies";
       throw err;
@@ -561,6 +590,7 @@ export const useMovieStore = defineStore("movie", () => {
       filteredResults.value = [];
       filteredCurrentPage.value = 1;
       filteredTotalPages.value = 1;
+      filteredTotalResults.value = 0;
       return;
     }
 
@@ -587,6 +617,9 @@ export const useMovieStore = defineStore("movie", () => {
       
       filteredCurrentPage.value = response.page;
       filteredTotalPages.value = response.totalPages;
+      if (reset) {
+        filteredTotalResults.value = response.totalResults || 0;
+      }
     } catch (err: any) {
       error.value = err.message || "Failed to apply filters";
       throw err;
@@ -601,8 +634,25 @@ export const useMovieStore = defineStore("movie", () => {
     filteredResults.value = [];
     filteredCurrentPage.value = 1;
     filteredTotalPages.value = 1;
+    filteredTotalResults.value = 0;
     hasActiveFilters.value = false;
   };
+
+  // Computed property to get current totalResults based on list type
+  const currentTotalResults = computed(() => {
+    switch (currentListType.value) {
+      case "popular":
+        return totalResults.value;
+      case "nowPlaying":
+        return nowPlayingTotalResults.value;
+      case "topRated":
+        return topRatedTotalResults.value;
+      case "search":
+        return searchTotalResults.value;
+      default:
+        return 0;
+    }
+  });
 
   const loadMoreFilteredMovies = async () => {
     if (filteredLoadingMore.value || loading.value) return;
@@ -639,14 +689,20 @@ export const useMovieStore = defineStore("movie", () => {
     configuration,
     currentPage,
     totalPages,
+    totalResults,
+    nowPlayingTotalResults,
+    topRatedTotalResults,
+    searchTotalResults,
     currentListType,
     searchDrawerOpen,
     searchFilters,
     filteredResults,
     filteredCurrentPage,
     filteredTotalPages,
+    filteredTotalResults,
     filteredLoadingMore,
     hasActiveFilters,
+    currentTotalResults,
     fetchPopularMovies,
     fetchNowPlayingMovies,
     fetchTopRatedMovies,

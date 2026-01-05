@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import {
   getPopularTVShows,
   searchTVShows,
@@ -9,7 +9,26 @@ import {
   getAiringTodayTVShows,
   getTVShowGenres,
   getConfiguration,
+  getTVShowCredits,
+  getTVShowImages,
+  getTVShowVideos,
+  getTVShowRecommendations,
+  discoverTVShows,
 } from "../services/TVService";
+
+// Define the filter type locally to avoid import issues
+type DiscoverTVFilters = {
+  query?: string;
+  genres?: number[];
+  first_air_date_year?: number;
+  vote_average_gte?: number;
+  language?: string;
+  runtime_min?: number;
+  runtime_max?: number;
+  first_air_date_from?: string;
+  first_air_date_to?: string;
+  page?: number;
+};
 
 interface TVShow {
   id: number;
@@ -21,6 +40,37 @@ interface TVShow {
   genres: { id: number; name: string }[];
   number_of_seasons?: number;
   number_of_episodes?: number;
+  status?: string;
+  original_language?: string;
+  backdrop_path?: string;
+  keywords?: {
+    keywords: { id: number; name: string }[];
+  };
+  networks?: { id: number; logo_path: string | null; name: string; origin_country: string }[];
+  created_by?: { id: number; name: string; profile_path: string | null }[];
+  episode_run_time?: number[];
+  in_production?: boolean;
+  last_air_date?: string;
+  next_episode_to_air?: {
+    air_date: string;
+    episode_number: number;
+    id: number;
+    name: string;
+    overview: string;
+    production_code: string;
+    season_number: number;
+    still_path: string | null;
+    vote_average: number;
+    vote_count: number;
+  } | null;
+  origin_country?: string[];
+  original_name?: string;
+  popularity?: number;
+  production_companies?: { id: number; logo_path: string | null; name: string; origin_country: string }[];
+  production_countries?: { iso_3166_1: string; name: string }[];
+  spoken_languages?: { english_name: string; iso_639_1: string; name: string }[];
+  tagline?: string;
+  type?: string;
 }
 
 interface Genre {
@@ -46,16 +96,58 @@ export const useTVStore = defineStore("tv", () => {
   const searchQuery = ref("");
   const searchResults = ref<TVShow[]>([]);
   const tvShowDetails = ref<TVShow | null>(null);
+  const tvShowCredits = ref<any>(null);
+  const tvShowImages = ref<any>(null);
+  const tvShowVideos = ref<any[]>([]);
+  const tvShowRecommendations = ref<TVShow[]>([]);
   const genres = ref<Genre[]>([]);
   const configuration = ref<any>(null);
   // Pagination state
   const currentPage = ref(1);
   const totalPages = ref(1);
+  const totalResults = ref(0);
+  const onTheAirTotalResults = ref(0);
+  const topRatedTotalResults = ref(0);
+  const searchTotalResults = ref(0);
   const loadingMore = ref(false);
   const currentListType = ref<"popular" | "onTheAir" | "topRated" | "search" | null>(null);
   // Search pagination state
   const searchCurrentPage = ref(1);
   const searchTotalPages = ref(1);
+  
+  // Search drawer and filter state
+  const searchDrawerOpen = ref(false);
+  const searchFilters = ref<{
+    query?: string;
+    genres?: number[];
+    first_air_date_year?: number;
+    vote_average_gte?: number;
+    language?: string;
+    runtime_min?: number;
+    runtime_max?: number;
+    first_air_date_from?: string;
+    first_air_date_to?: string;
+  }>({});
+  const filteredResults = ref<TVShow[]>([]);
+  const filteredCurrentPage = ref(1);
+  const filteredTotalPages = ref(1);
+  const filteredTotalResults = ref(0);
+  const filteredLoadingMore = ref(false);
+  
+  const hasActiveFilters = computed(() => {
+    const filters = searchFilters.value;
+    return !!(
+      filters.query?.trim() ||
+      (filters.genres && filters.genres.length > 0) ||
+      filters.first_air_date_year ||
+      filters.vote_average_gte !== undefined ||
+      filters.language ||
+      filters.runtime_min !== undefined ||
+      filters.runtime_max !== undefined ||
+      filters.first_air_date_from ||
+      filters.first_air_date_to
+    );
+  });
 
   // Cache storage
   const cache = ref<Map<string, CacheEntry<any>>>(new Map());
@@ -156,6 +248,7 @@ export const useTVStore = defineStore("tv", () => {
         tvShows.value = cachedData;
         loading.value = false;
         totalPages.value = getCachedData<number>("popular:totalPages") || 1;
+        totalResults.value = getCachedData<number>("popular:totalResults") || 0;
       } else {
         loading.value = true;
         tvShows.value = [];
@@ -169,6 +262,7 @@ export const useTVStore = defineStore("tv", () => {
       const response = await getPopularTVShows(currentPage.value);
       if (reset) {
         tvShows.value = response.results;
+        totalResults.value = response.totalResults || 0;
       } else {
         tvShows.value = [...tvShows.value, ...response.results];
       }
@@ -176,6 +270,9 @@ export const useTVStore = defineStore("tv", () => {
       totalPages.value = response.totalPages;
       setCachedData(`popular:${response.page}`, response.results);
       setCachedData("popular:totalPages", response.totalPages);
+      if (reset) {
+        setCachedData("popular:totalResults", response.totalResults || 0);
+      }
     } catch (err: any) {
       error.value = err.message || "Failed to fetch TV shows";
       throw err;
@@ -194,6 +291,7 @@ export const useTVStore = defineStore("tv", () => {
         tvShows.value = cachedData;
         loading.value = false;
         totalPages.value = getCachedData<number>("onTheAir:totalPages") || 1;
+        onTheAirTotalResults.value = getCachedData<number>("onTheAir:totalResults") || 0;
       } else {
         loading.value = true;
         tvShows.value = [];
@@ -207,6 +305,7 @@ export const useTVStore = defineStore("tv", () => {
       const response = await getOnTheAirTVShows(currentPage.value);
       if (reset) {
         tvShows.value = response.results;
+        onTheAirTotalResults.value = response.totalResults || 0;
       } else {
         tvShows.value = [...tvShows.value, ...response.results];
       }
@@ -214,6 +313,9 @@ export const useTVStore = defineStore("tv", () => {
       totalPages.value = response.totalPages;
       setCachedData(`onTheAir:${response.page}`, response.results);
       setCachedData("onTheAir:totalPages", response.totalPages);
+      if (reset) {
+        setCachedData("onTheAir:totalResults", response.totalResults || 0);
+      }
     } catch (err: any) {
       error.value = err.message || "Failed to fetch TV shows";
       throw err;
@@ -232,6 +334,7 @@ export const useTVStore = defineStore("tv", () => {
         tvShows.value = cachedData;
         loading.value = false;
         totalPages.value = getCachedData<number>("topRated:totalPages") || 1;
+        topRatedTotalResults.value = getCachedData<number>("topRated:totalResults") || 0;
       } else {
         loading.value = true;
         tvShows.value = [];
@@ -245,6 +348,7 @@ export const useTVStore = defineStore("tv", () => {
       const response = await getTopRatedTVShows(currentPage.value);
       if (reset) {
         tvShows.value = response.results;
+        topRatedTotalResults.value = response.totalResults || 0;
       } else {
         tvShows.value = [...tvShows.value, ...response.results];
       }
@@ -252,6 +356,9 @@ export const useTVStore = defineStore("tv", () => {
       totalPages.value = response.totalPages;
       setCachedData(`topRated:${response.page}`, response.results);
       setCachedData("topRated:totalPages", response.totalPages);
+      if (reset) {
+        setCachedData("topRated:totalResults", response.totalResults || 0);
+      }
     } catch (err: any) {
       error.value = err.message || "Failed to fetch TV shows";
       throw err;
@@ -302,6 +409,7 @@ export const useTVStore = defineStore("tv", () => {
       searchResults.value = cachedData;
       loading.value = false;
       searchTotalPages.value = getCachedData<number>(`search:${query.toLowerCase().trim()}:totalPages`) || 1;
+      searchTotalResults.value = getCachedData<number>(`search:${query.toLowerCase().trim()}:totalResults`) || 0;
       return;
     }
 
@@ -323,8 +431,14 @@ export const useTVStore = defineStore("tv", () => {
       }
       searchCurrentPage.value = response.page;
       searchTotalPages.value = response.totalPages;
+      if (reset) {
+        searchTotalResults.value = response.totalResults || 0;
+      }
       setCachedData(cacheKey, response.results);
       setCachedData(`search:${query.toLowerCase().trim()}:totalPages`, response.totalPages);
+      if (reset) {
+        setCachedData(`search:${query.toLowerCase().trim()}:totalResults`, response.totalResults || 0);
+      }
     } catch (err: any) {
       error.value = err.message || "Failed to search TV shows";
       throw err;
@@ -341,12 +455,56 @@ export const useTVStore = defineStore("tv", () => {
       // Set loading and clear details BEFORE fetching to show loading state
       loading.value = true;
       tvShowDetails.value = null;
+      tvShowCredits.value = null;
+      tvShowImages.value = null;
+      tvShowVideos.value = [];
+      tvShowRecommendations.value = [];
     }
     await fetchWithCache(
       cacheKey,
       () => getTVShow(id),
       (data) => (tvShowDetails.value = data)
     );
+    
+    // Fetch credits, images, videos, and recommendations in parallel
+    const creditsCacheKey = `tv:${id}:credits`;
+    const imagesCacheKey = `tv:${id}:images`;
+    
+    await fetchWithCache(
+      creditsCacheKey,
+      () => getTVShowCredits(id),
+      (data) => (tvShowCredits.value = data)
+    ).catch((err) => {
+      console.error("Failed to fetch TV show credits:", err);
+    });
+    
+    await fetchWithCache(
+      imagesCacheKey,
+      () => getTVShowImages(id),
+      (data) => (tvShowImages.value = data)
+    ).catch((err) => {
+      console.error("Failed to fetch TV show images:", err);
+    });
+    
+    // Fetch videos
+    const videosCacheKey = `tv:${id}:videos`;
+    await fetchWithCache(
+      videosCacheKey,
+      () => getTVShowVideos(id),
+      (data) => (tvShowVideos.value = data)
+    ).catch((err) => {
+      console.error("Failed to fetch TV show videos:", err);
+    });
+    
+    // Fetch recommendations
+    const recommendationsCacheKey = `tv:${id}:recommendations`;
+    await fetchWithCache(
+      recommendationsCacheKey,
+      () => getTVShowRecommendations(id, 1),
+      (data) => (tvShowRecommendations.value = data.results || [])
+    ).catch((err) => {
+      console.error("Failed to fetch TV show recommendations:", err);
+    });
   };
 
   const fetchGenres = async () => {
@@ -480,6 +638,112 @@ export const useTVStore = defineStore("tv", () => {
     }
   };
 
+  const toggleSearchDrawer = () => {
+    searchDrawerOpen.value = !searchDrawerOpen.value;
+  };
+
+  const applyFilters = async (filters: DiscoverTVFilters, reset: boolean = true) => {
+    // Check if filters are active
+    const isActive = !!(
+      filters.query?.trim() ||
+      (filters.genres && filters.genres.length > 0) ||
+      filters.first_air_date_year ||
+      (filters.vote_average_gte !== undefined && filters.vote_average_gte > 0) ||
+      filters.language ||
+      filters.runtime_min !== undefined ||
+      filters.runtime_max !== undefined ||
+      filters.first_air_date_from ||
+      filters.first_air_date_to
+    );
+    
+    hasActiveFilters.value = isActive;
+    searchFilters.value = { ...filters };
+
+    if (!isActive) {
+      filteredResults.value = [];
+      filteredCurrentPage.value = 1;
+      filteredTotalPages.value = 1;
+      return;
+    }
+
+    if (reset) {
+      filteredCurrentPage.value = 1;
+      filteredResults.value = [];
+      loading.value = true;
+      error.value = "";
+    } else {
+      filteredLoadingMore.value = true;
+    }
+
+    try {
+      const response = await discoverTVShows({
+        ...filters,
+        page: filteredCurrentPage.value,
+      });
+
+      if (reset) {
+        filteredResults.value = response.results;
+      } else {
+        filteredResults.value = [...filteredResults.value, ...response.results];
+      }
+      
+      filteredCurrentPage.value = response.page;
+      filteredTotalPages.value = response.totalPages;
+      if (reset) {
+        filteredTotalResults.value = response.totalResults || 0;
+      }
+    } catch (err: any) {
+      error.value = err.message || "Failed to apply filters";
+      throw err;
+    } finally {
+      loading.value = false;
+      filteredLoadingMore.value = false;
+    }
+  };
+
+  const clearFilters = () => {
+    searchFilters.value = {};
+    filteredResults.value = [];
+    filteredCurrentPage.value = 1;
+    filteredTotalPages.value = 1;
+    filteredTotalResults.value = 0;
+    hasActiveFilters.value = false;
+  };
+
+  // Computed property to get current totalResults based on list type
+  const currentTotalResults = computed(() => {
+    switch (currentListType.value) {
+      case "popular":
+        return totalResults.value;
+      case "onTheAir":
+        return onTheAirTotalResults.value;
+      case "topRated":
+        return topRatedTotalResults.value;
+      case "search":
+        return searchTotalResults.value;
+      default:
+        return 0;
+    }
+  });
+
+  const loadMoreFilteredTVShows = async () => {
+    if (filteredLoadingMore.value || loading.value) return;
+    if (filteredCurrentPage.value >= filteredTotalPages.value) return;
+    if (!hasActiveFilters.value) return;
+
+    filteredLoadingMore.value = true;
+    filteredCurrentPage.value += 1;
+
+    try {
+      await applyFilters(searchFilters.value, false);
+    } catch (err) {
+      filteredCurrentPage.value -= 1; // Revert page on error
+      console.error("Failed to load more filtered TV shows:", err);
+    } finally {
+      filteredLoadingMore.value = false;
+    }
+  };
+
   return {
     tvShows,
     loading,
@@ -489,13 +753,30 @@ export const useTVStore = defineStore("tv", () => {
     searchQuery,
     searchResults,
     tvShowDetails,
+    tvShowCredits,
+    tvShowImages,
+    tvShowVideos,
+    tvShowRecommendations,
     genres,
     configuration,
     currentPage,
     totalPages,
+    totalResults,
+    onTheAirTotalResults,
+    topRatedTotalResults,
+    searchTotalResults,
     currentListType,
     searchCurrentPage,
     searchTotalPages,
+    searchDrawerOpen,
+    searchFilters,
+    filteredResults,
+    filteredCurrentPage,
+    filteredTotalPages,
+    filteredTotalResults,
+    filteredLoadingMore,
+    hasActiveFilters,
+    currentTotalResults,
     fetchPopularTVShows,
     fetchOnTheAirTVShows,
     fetchTopRatedTVShows,
@@ -506,6 +787,10 @@ export const useTVStore = defineStore("tv", () => {
     fetchConfiguration,
     loadMoreTVShows,
     loadMoreSearchTVShows,
+    toggleSearchDrawer,
+    applyFilters,
+    clearFilters,
+    loadMoreFilteredTVShows,
   };
 });
 

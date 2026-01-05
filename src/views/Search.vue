@@ -2,7 +2,12 @@
   <div class="min-h-screen bg-gray-900 text-white pb-32">
     <Navbar />
     <div class="container mx-auto px-4 py-8">
-      <h1 class="text-3xl font-bold mb-8">Search Movies</h1>
+      <h1 class="text-3xl font-bold mb-8">
+        Search Movies
+        <span v-if="searchTotalResults > 0" class="text-xl font-normal text-gray-400 ml-2">
+          ({{ searchTotalResults.toLocaleString() }})
+        </span>
+      </h1>
       <div class="mb-8">
         <input
           v-model="query"
@@ -33,7 +38,7 @@ import Navbar from "../components/Navbar.vue";
 import MovieList from "../components/MovieList.vue";
 
 const store = useMovieStore();
-const { searchResults, loading, loadingMore, error, currentPage, totalPages, searchQuery, hasAttemptedFetch } = storeToRefs(store);
+const { searchResults, loading, loadingMore, error, currentPage, totalPages, searchQuery, hasAttemptedFetch, searchTotalResults } = storeToRefs(store);
 const { searchMoviesAction, loadMoreMovies } = store;
 const query = ref("");
 

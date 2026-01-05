@@ -43,12 +43,12 @@
         <!-- Text Search -->
         <div class="mb-3">
           <label class="block text-xs font-medium text-gray-300 mb-1">
-            Search Movies
+            Search {{ type === 'tv' ? 'TV Shows' : 'Movies' }}
           </label>
           <input
             v-model="localFilters.query"
             type="text"
-            placeholder="Enter movie title..."
+            :placeholder="`Enter ${type === 'tv' ? 'TV show' : 'movie'} title...`"
             class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             @input="debouncedApplyFilters"
           />
@@ -87,12 +87,28 @@
         </div>
 
         <!-- Year -->
-        <div class="mb-3">
+        <div class="mb-3" v-if="type === 'movie'">
           <label class="block text-xs font-medium text-gray-300 mb-1">
             Release Year
           </label>
           <input
             v-model.number="localFilters.year"
+            type="number"
+            min="1900"
+            :max="currentYear"
+            placeholder="e.g. 2020"
+            class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            @input="debouncedApplyFilters"
+          />
+        </div>
+        
+        <!-- First Air Date Year (TV Shows) -->
+        <div class="mb-3" v-if="type === 'tv'">
+          <label class="block text-xs font-medium text-gray-300 mb-1">
+            First Air Date Year
+          </label>
+          <input
+            v-model.number="localFilters.first_air_date_year"
             type="number"
             min="1900"
             :max="currentYear"
@@ -166,8 +182,8 @@
           </select>
         </div>
 
-        <!-- Release Date Range -->
-        <div class="mb-3">
+        <!-- Release Date Range (Movies) -->
+        <div class="mb-3" v-if="type === 'movie'">
           <label class="block text-xs font-medium text-gray-300 mb-1">
             Release Date Range
           </label>
@@ -195,6 +211,36 @@
             </div>
           </div>
         </div>
+        
+        <!-- First Air Date Range (TV Shows) -->
+        <div class="mb-3" v-if="type === 'tv'">
+          <label class="block text-xs font-medium text-gray-300 mb-1">
+            First Air Date Range
+          </label>
+          <div class="space-y-2">
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">From Date</label>
+              <input
+                v-model="localFilters.first_air_date_from"
+                type="date"
+                class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                @input="debouncedApplyFilters"
+              />
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">To Date</label>
+              <input
+                v-model="localFilters.first_air_date_to"
+                type="date"
+                class="w-full p-2 text-sm bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                @input="validateDates"
+              />
+            </div>
+            <div v-if="dateError" class="text-xs text-red-400 mt-1">
+              {{ dateError }}
+            </div>
+          </div>
+        </div>
 
         <!-- Clear Filters Button -->
         <button
@@ -212,8 +258,19 @@
 import { ref, watch, onMounted, onUnmounted, computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useMovieStore } from "../stores/movieStore";
+import { useTVStore } from "../stores/tvStore";
 
-const store = useMovieStore();
+const props = withDefaults(defineProps<{
+  type?: 'movie' | 'tv';
+}>(), {
+  type: 'movie'
+});
+
+const movieStore = useMovieStore();
+const tvStore = useTVStore();
+
+// Use the appropriate store based on type
+const store = props.type === 'tv' ? tvStore : movieStore;
 const { searchDrawerOpen, genres, filteredResults, searchFilters } = storeToRefs(store);
 const { toggleSearchDrawer, applyFilters, clearFilters: clearStoreFilters, fetchGenres } = store;
 
@@ -234,12 +291,15 @@ const localFilters = ref({
   query: "",
   genres: [] as number[],
   year: undefined as number | undefined,
+  first_air_date_year: undefined as number | undefined,
   vote_average_gte: undefined as number | undefined,
   language: undefined as string | undefined,
   runtime_min: undefined as number | undefined,
   runtime_max: undefined as number | undefined,
   release_date_from: undefined as string | undefined,
   release_date_to: undefined as string | undefined,
+  first_air_date_from: undefined as string | undefined,
+  first_air_date_to: undefined as string | undefined,
 });
 
 const genresLoading = ref(false);
@@ -264,10 +324,19 @@ const selectedRuntime = computed({
 
 // Date validation
 const validateDates = () => {
-  if (localFilters.value.release_date_from && localFilters.value.release_date_to) {
-    if (localFilters.value.release_date_to < localFilters.value.release_date_from) {
-      dateError.value = "To date must be greater than or equal to from date";
-      return false;
+  if (props.type === 'movie') {
+    if (localFilters.value.release_date_from && localFilters.value.release_date_to) {
+      if (localFilters.value.release_date_to < localFilters.value.release_date_from) {
+        dateError.value = "To date must be greater than or equal to from date";
+        return false;
+      }
+    }
+  } else {
+    if (localFilters.value.first_air_date_from && localFilters.value.first_air_date_to) {
+      if (localFilters.value.first_air_date_to < localFilters.value.first_air_date_from) {
+        dateError.value = "To date must be greater than or equal to from date";
+        return false;
+      }
     }
   }
   dateError.value = "";
@@ -281,7 +350,31 @@ const debouncedApplyFilters = () => {
   if (debounceTimeout) clearTimeout(debounceTimeout);
   debounceTimeout = setTimeout(() => {
     if (!dateError.value) {
-      applyFilters(localFilters.value);
+      // Map localFilters to the correct format for the store
+      const filtersToApply = props.type === 'tv' 
+        ? {
+            query: localFilters.value.query,
+            genres: localFilters.value.genres,
+            first_air_date_year: localFilters.value.first_air_date_year,
+            vote_average_gte: localFilters.value.vote_average_gte,
+            language: localFilters.value.language,
+            runtime_min: localFilters.value.runtime_min,
+            runtime_max: localFilters.value.runtime_max,
+            first_air_date_from: localFilters.value.first_air_date_from,
+            first_air_date_to: localFilters.value.first_air_date_to,
+          }
+        : {
+            query: localFilters.value.query,
+            genres: localFilters.value.genres,
+            year: localFilters.value.year,
+            vote_average_gte: localFilters.value.vote_average_gte,
+            language: localFilters.value.language,
+            runtime_min: localFilters.value.runtime_min,
+            runtime_max: localFilters.value.runtime_max,
+            release_date_from: localFilters.value.release_date_from,
+            release_date_to: localFilters.value.release_date_to,
+          };
+      applyFilters(filtersToApply);
     }
   }, 500);
 };
@@ -295,12 +388,15 @@ const clearFilters = () => {
     query: "",
     genres: [],
     year: undefined,
+    first_air_date_year: undefined,
     vote_average_gte: undefined,
     language: undefined,
     runtime_min: undefined,
     runtime_max: undefined,
     release_date_from: undefined,
     release_date_to: undefined,
+    first_air_date_from: undefined,
+    first_air_date_to: undefined,
   };
   dateError.value = "";
   clearStoreFilters();
@@ -322,13 +418,16 @@ watch(isOpen, (newValue) => {
       localFilters.value = {
         query: searchFilters.value.query || "",
         genres: searchFilters.value.genres || [],
-        year: searchFilters.value.year,
+        year: (searchFilters.value as any).year,
+        first_air_date_year: (searchFilters.value as any).first_air_date_year,
         vote_average_gte: searchFilters.value.vote_average_gte,
         language: searchFilters.value.language,
         runtime_min: searchFilters.value.runtime_min,
         runtime_max: searchFilters.value.runtime_max,
-        release_date_from: searchFilters.value.release_date_from,
-        release_date_to: searchFilters.value.release_date_to,
+        release_date_from: (searchFilters.value as any).release_date_from,
+        release_date_to: (searchFilters.value as any).release_date_to,
+        first_air_date_from: (searchFilters.value as any).first_air_date_from,
+        first_air_date_to: (searchFilters.value as any).first_air_date_to,
       };
     }
   }
@@ -349,13 +448,16 @@ onMounted(() => {
     localFilters.value = {
       query: searchFilters.value.query || "",
       genres: searchFilters.value.genres || [],
-      year: searchFilters.value.year,
+      year: (searchFilters.value as any).year,
+      first_air_date_year: (searchFilters.value as any).first_air_date_year,
       vote_average_gte: searchFilters.value.vote_average_gte,
       language: searchFilters.value.language,
       runtime_min: searchFilters.value.runtime_min,
       runtime_max: searchFilters.value.runtime_max,
-      release_date_from: searchFilters.value.release_date_from,
-      release_date_to: searchFilters.value.release_date_to,
+      release_date_from: (searchFilters.value as any).release_date_from,
+      release_date_to: (searchFilters.value as any).release_date_to,
+      first_air_date_from: (searchFilters.value as any).first_air_date_from,
+      first_air_date_to: (searchFilters.value as any).first_air_date_to,
     };
   }
 });

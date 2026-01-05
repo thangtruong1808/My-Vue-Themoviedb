@@ -97,7 +97,7 @@
           <!-- Overview -->
           <div v-if="movieDetails.overview" class="mb-8 order-1">
             <h2 class="text-2xl font-bold mb-3">Overview</h2>
-            <p class="text-gray-300 leading-relaxed break-words">{{ movieDetails.overview }}</p>
+            <p class="text-gray-300 leading-relaxed break-words text-justify">{{ movieDetails.overview }}</p>
           </div>
 
           <!-- Facts Section (Mobile/Tablet - shown above Top Billed Cast) -->

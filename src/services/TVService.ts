@@ -177,3 +177,88 @@ export const getConfiguration = async () => {
   return data;
 };
 
+export const getTVShowRecommendations = async (id: string, page: number = 1) => {
+  const response = await fetchWithTimeout(
+    `${API_URL}/tv/${id}/recommendations?page=${page}`,
+    options
+  );
+  const data = await handleResponse(response);
+  return {
+    results: data.results || [],
+    page: data.page || page,
+    totalPages: data.total_pages || 1,
+    totalResults: data.total_results || 0,
+  };
+};
+
+export type DiscoverTVFilters = {
+  query?: string;
+  genres?: number[];
+  first_air_date_year?: number;
+  vote_average_gte?: number;
+  language?: string;
+  runtime_min?: number;
+  runtime_max?: number;
+  first_air_date_from?: string;
+  first_air_date_to?: string;
+  page?: number;
+};
+
+export const discoverTVShows = async (filters: DiscoverTVFilters) => {
+  const params = new URLSearchParams();
+  
+  if (filters.query) {
+    params.append("query", filters.query);
+  }
+  
+  if (filters.genres && filters.genres.length > 0) {
+    params.append("with_genres", filters.genres.join(","));
+  }
+  
+  if (filters.first_air_date_year) {
+    params.append("first_air_date_year", filters.first_air_date_year.toString());
+  }
+  
+  if (filters.vote_average_gte !== undefined) {
+    params.append("vote_average.gte", filters.vote_average_gte.toString());
+  }
+  
+  if (filters.language) {
+    params.append("with_original_language", filters.language);
+  }
+  
+  if (filters.runtime_min !== undefined) {
+    params.append("with_runtime.gte", filters.runtime_min.toString());
+  }
+  
+  if (filters.runtime_max !== undefined) {
+    params.append("with_runtime.lte", filters.runtime_max.toString());
+  }
+  
+  if (filters.first_air_date_from) {
+    params.append("first_air_date.gte", filters.first_air_date_from);
+  }
+  
+  if (filters.first_air_date_to) {
+    params.append("first_air_date.lte", filters.first_air_date_to);
+  }
+  
+  if (filters.page) {
+    params.append("page", filters.page.toString());
+  } else {
+    params.append("page", "1");
+  }
+  
+  const response = await fetchWithTimeout(
+    `${API_URL}/discover/tv?${params.toString()}`,
+    options
+  );
+  const data = await handleResponse(response);
+  return {
+    results: data.results || [],
+    page: data.page || filters.page || 1,
+    totalPages: data.total_pages || 1,
+    totalResults: data.total_results || 0,
+  };
+};
+

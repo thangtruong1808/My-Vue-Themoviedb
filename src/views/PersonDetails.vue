@@ -41,7 +41,7 @@
           <div class="space-y-4">
             <div>
               <h3 class="font-semibold text-lg mb-3">Personal Info</h3>
-              <div class="space-y-3 text-sm">
+              <div class="grid grid-cols-2 lg:grid-cols-1 gap-3 text-sm">
                 <div v-if="personDetails.known_for_department">
                   <div class="font-semibold text-gray-400">Known For</div>
                   <div class="text-gray-300">{{ personDetails.known_for_department }}</div>
@@ -67,7 +67,7 @@
                   <div class="font-semibold text-gray-400">Place of Birth</div>
                   <div class="text-gray-300">{{ personDetails.place_of_birth }}</div>
                 </div>
-                <div v-if="personDetails.also_known_as && personDetails.also_known_as.length > 0">
+                <div v-if="personDetails.also_known_as && personDetails.also_known_as.length > 0" class="col-span-2 lg:col-span-1">
                   <div class="font-semibold text-gray-400">Also Known As</div>
                   <div class="text-gray-300 space-y-1">
                     <div v-for="(name, index) in personDetails.also_known_as" :key="index">{{ name }}</div>
@@ -88,7 +88,7 @@
           <!-- Biography -->
           <div v-if="personDetails.biography" class="mb-8">
             <h2 class="text-2xl font-bold mb-4">Biography</h2>
-            <p class="text-gray-300 leading-relaxed whitespace-pre-line">{{ personDetails.biography }}</p>
+            <p class="text-gray-300 leading-relaxed whitespace-pre-line text-justify">{{ personDetails.biography }}</p>
           </div>
 
           <!-- Known For -->
@@ -147,7 +147,7 @@
             </div>
 
             <!-- Acting Credits -->
-            <div v-if="activeCreditFilter === 'acting' && actingCredits.length > 0" class="space-y-4">
+            <div v-if="activeCreditFilter === 'acting' && actingCredits.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div
                 v-for="credit in actingCredits"
                 :key="`${credit.media_type}-${credit.id}`"
@@ -183,7 +183,7 @@
             </div>
 
             <!-- Production Credits -->
-            <div v-if="activeCreditFilter === 'production' && productionCredits.length > 0" class="space-y-4">
+            <div v-if="activeCreditFilter === 'production' && productionCredits.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div
                 v-for="credit in productionCredits"
                 :key="`${credit.media_type}-${credit.id}`"
@@ -219,7 +219,7 @@
             </div>
 
             <!-- Directing Credits -->
-            <div v-if="activeCreditFilter === 'directing' && directingCredits.length > 0" class="space-y-4">
+            <div v-if="activeCreditFilter === 'directing' && directingCredits.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div
                 v-for="credit in directingCredits"
                 :key="`${credit.media_type}-${credit.id}`"

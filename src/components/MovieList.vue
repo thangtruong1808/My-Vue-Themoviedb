@@ -2,7 +2,7 @@
   <!-- Priority 1: Show movies if we have them (regardless of loading state) -->
   <div v-if="movies && Array.isArray(movies) && movies.length > 0">
     <div
-      class="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6"
+      class="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-4 sm:gap-5 lg:gap-6"
     >
       <MovieCard v-for="movie in movies" :key="movie.id" :movie="movie" />
     </div>
@@ -19,7 +19,7 @@
       v-if="loadingMore"
       class="w-full flex items-center justify-center mt-8"
     >
-      <div class="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
+      <div class="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-4 sm:gap-5 lg:gap-6">
         <div
           v-for="n in 5"
           :key="n"

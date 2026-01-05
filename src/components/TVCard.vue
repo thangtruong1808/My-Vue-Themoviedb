@@ -14,12 +14,14 @@
         />
       </div>
     </router-link>
-    <div class="p-4">
-      <h3 class="text-lg font-semibold mb-2 truncate">{{ tvShow.name }}</h3>
-      <p class="text-gray-400 text-sm mb-2">{{ tvShow.first_air_date }}</p>
-      <div class="flex items-center">
-        <span class="text-yellow-400 mr-1">★</span>
-        <span>{{ tvShow.vote_average.toFixed(1) }}</span>
+    <div class="p-2">
+      <h3 class="text-lg font-semibold mb-1 truncate">{{ tvShow.name }}</h3>
+      <div class="flex items-center justify-between mb-1">
+        <p class="text-gray-400 text-sm">{{ tvShow.first_air_date }}</p>
+        <div class="flex items-center">
+          <span class="text-yellow-400 mr-1">★</span>
+          <span class="text-sm">{{ tvShow.vote_average.toFixed(1) }}</span>
+        </div>
       </div>
     </div>
   </div>

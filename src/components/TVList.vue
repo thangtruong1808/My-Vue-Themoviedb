@@ -2,7 +2,7 @@
   <!-- Priority 1: Show TV shows if we have them (regardless of loading state) -->
   <div v-if="tvShows && Array.isArray(tvShows) && tvShows.length > 0">
     <div
-      class="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6"
+      class="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-4 sm:gap-5 lg:gap-6"
     >
       <TVCard v-for="tvShow in tvShows" :key="tvShow.id" :tvShow="tvShow" />
     </div>

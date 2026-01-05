@@ -2,7 +2,12 @@
   <div class="min-h-screen bg-gray-900 text-white pb-32">
     <Navbar />
     <div class="container mx-auto px-4 py-8">
-      <h1 class="text-3xl font-bold mb-8">Popular TV Shows</h1>
+      <h1 class="text-3xl font-bold mb-8">
+        Popular TV Shows
+        <span v-if="totalResults > 0" class="text-xl font-normal text-gray-400 ml-2">
+          ({{ totalResults.toLocaleString() }})
+        </span>
+      </h1>
       <TVList
         :tv-shows="tvShows"
         :loading="loading"
@@ -25,7 +30,7 @@ import TVList from "../components/TVList.vue";
 
 const store = useTVStore();
 // Use storeToRefs to maintain reactivity for state properties
-const { tvShows, loading, loadingMore, error, hasAttemptedFetch, currentPage, totalPages } = storeToRefs(store);
+const { tvShows, loading, loadingMore, error, hasAttemptedFetch, currentPage, totalPages, totalResults } = storeToRefs(store);
 // Methods don't need storeToRefs, access directly from store
 const { fetchPopularTVShows, loadMoreTVShows } = store;
 

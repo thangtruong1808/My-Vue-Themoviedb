@@ -34,9 +34,12 @@
         <router-link to="/tv/top-rated" class="nav-link"
           >Top Rated TV</router-link
         >
-        <router-link to="/tv/search" class="nav-link"
-          >Search TV</router-link
+        <button 
+          @click="toggleTVSearchDrawer" 
+          :class="['nav-link', { 'nav-link-active': tvSearchDrawerOpen }]"
         >
+          Search TV
+        </button>
       </div>
       <div class="md:hidden">
         <button @click="toggleMenu" class="text-white">
@@ -100,14 +103,15 @@
         class="nav-link-mobile"
         >Top Rated TV</router-link
       >
-      <router-link
-        to="/tv/search"
-        @click="toggleMenu"
-        class="nav-link-mobile"
-        >Search TV</router-link
+      <button
+        @click="handleMobileTVSearchClick"
+        :class="['nav-link-mobile', 'w-full', 'text-left', { 'nav-link-active': tvSearchDrawerOpen }]"
       >
+        Search TV
+      </button>
     </div>
-    <SearchDrawer />
+    <SearchDrawer type="movie" />
+    <SearchDrawer type="tv" />
   </nav>
 </template>
 
@@ -115,11 +119,15 @@
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useMovieStore } from "../stores/movieStore";
+import { useTVStore } from "../stores/tvStore";
 import SearchDrawer from "./SearchDrawer.vue";
 
-const store = useMovieStore();
-const { searchDrawerOpen, hasActiveFilters } = storeToRefs(store);
-const { toggleSearchDrawer, clearFilters } = store;
+const movieStore = useMovieStore();
+const tvStore = useTVStore();
+const { searchDrawerOpen, hasActiveFilters } = storeToRefs(movieStore);
+const { searchDrawerOpen: tvSearchDrawerOpen, hasActiveFilters: tvHasActiveFilters } = storeToRefs(tvStore);
+const { toggleSearchDrawer, clearFilters } = movieStore;
+const { toggleSearchDrawer: toggleTVSearchDrawer, clearFilters: clearTVFilters } = tvStore;
 
 const menuOpen = ref(false);
 
@@ -137,6 +145,14 @@ const handleLogoClick = () => {
   if (hasActiveFilters.value) {
     clearFilters();
   }
+  if (tvHasActiveFilters.value) {
+    clearTVFilters();
+  }
+};
+
+const handleMobileTVSearchClick = () => {
+  toggleMenu();
+  toggleTVSearchDrawer();
 };
 </script>
 
