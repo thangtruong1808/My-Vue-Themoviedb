@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-gray-100 dark:bg-gray-800 border-t border-gray-300 dark:border-gray-700 bottom-0 left-0 right-0 z-30 w-full">
+  <footer class="bg-gray-100 dark:bg-gray-800 border-t border-gray-300 dark:border-gray-700 bottom-0 left-0 right-0 z-30 w-full sticky">
     <div class="container mx-auto px-4 py-4">
       <!-- Row 1: Copyright and Social Media -->
       <div class="flex flex-col md:flex-row justify-between items-center mb-4 pb-4 border-b border-gray-300 dark:border-gray-700">
@@ -10,9 +10,10 @@
           </p>
         </div>
         <div class="flex space-x-4">
+         
           <!-- Facebook -->
           <a
-            href="https://facebook.com"
+            href="https://www.facebook.com/profile.php?id=100051753410222"
             target="_blank"
             rel="noopener noreferrer"
             class="text-gray-600 dark:text-gray-400 hover:text-blue-400 transition-colors"
@@ -32,7 +33,7 @@
 
           <!-- LinkedIn -->
           <a
-            href="https://linkedin.com"
+            href="https://www.linkedin.com/in/thang-truong-00b245200/"
             target="_blank"
             rel="noopener noreferrer"
             class="text-gray-600 dark:text-gray-400 hover:text-blue-400 transition-colors"
@@ -52,7 +53,7 @@
 
           <!-- GitHub -->
           <a
-            href="https://github.com"
+            href="https://github.com/thangtruong1808"
             target="_blank"
             rel="noopener noreferrer"
             class="text-gray-600 dark:text-gray-400 hover:text-blue-400 transition-colors"
@@ -69,6 +70,26 @@
                 d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
                 clip-rule="evenodd"
               />
+            </svg>
+          </a>
+
+           <!-- Blog -->
+           <a
+            href="https://www.thang-truong.blog/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-gray-600 dark:text-gray-400 hover:text-blue-400 transition-colors"
+            aria-label="Facebook"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+            <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm7.93 9h-3.09a15.4 15.4 0 00-1.2-5.02A8.03 8.03 0 0119.93 11zM12 4c.88 1.28 1.58 3.1 1.9 5H10.1C10.42 7.1 11.12 5.28 12 4zM4.07 13h3.09c.22 1.8.68 3.5 1.2 5.02A8.03 8.03 0 014.07 13zm3.09-2H4.07a8.03 8.03 0 014.22-5.02A15.4 15.4 0 007.16 11zM12 20c-.88-1.28-1.58-3.1-1.9-5h3.8c-.32 1.9-1.02 3.72-1.9 5zm2.74-2.98c.52-1.52.98-3.22 1.2-5.02h3.09a8.03 8.03 0 01-4.29 5.02z"/>
+            <!-- <path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z"/>
+            <path d="M5 5h6v2H7v10h10v-4h2v6H5V5z"/> -->
             </svg>
           </a>
         </div>
